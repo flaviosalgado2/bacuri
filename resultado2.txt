@@ -1,0 +1,52 @@
+Correções concluídas! ✅
+O que foi feito
+1. Imagem Postgres corrigida
+- Revertido postgres:17 → postgres:18.6 no docker-compose.yml
+- Ajustado o volume para /var/lib/postgresql (exigência da imagem 18+)
+2. Tudo em português
+Renomeado e refatorado:
+- Componentes: BarraLateral.vue, Cabecalho.vue, FormularioConta.vue, ListaContas.vue
+- Layouts: padrao.vue, autenticacao.vue
+- Páginas: entrar.vue, cadastro.vue
+- Middlewares: logado.ts, visitante.ts
+- Composables: useAutenticacao.ts, useContas.ts
+- APIs: api/autenticacao/*, api/contas/*
+- Utilitários: server/utils/banco.ts, server/utils/autenticacao.ts, server/utils/contas.ts
+- Schema: tabelas e colunas em português (usuarios, contas, perfil, vencimento, descontoAte, etc.)
+3. Código simplificado e menos verboso
+- Reduzido número de linhas em componentes, páginas e utilitários
+- Eliminadas redundâncias e abstrações desnecessárias
+- Funções mais diretas e nomes claros
+- Schemas Zod inline e compactos
+- Helpers reutilizáveis (verificarAcesso, montarFiltros)
+4. Testes automatizados
+Configurado Vitest + @nuxt/test-utils + happy-dom.
+Criados 3 arquivos de teste (10 testes):
+- tests/autenticacao.test.ts — cadastro, login, e-mail duplicado, acesso protegido
+- tests/contas.test.ts — criação, listagem, atualização de status e exclusão
+- tests/acesso.test.ts — isolamento entre usuários e permissão root
+Helper de banco de testes em tests/utils/banco.ts com reset automático antes dos testes.
+Resultado da validação
+npm run build   # ✅ sucesso
+npm test        # ✅ 10 tests passed
+Como usar
+# Subir o banco
+docker compose up -d postgres
+
+# Criar banco de testes (apenas para rodar testes)
+docker exec postgres-dev psql -U nuxt_dev -d nuxt_dev -c "CREATE DATABASE nuxt_test;"
+
+# Instalar dependências
+npm install
+
+# Aplicar migrations
+npm run db:migrate
+
+# Rodar em desenvolvimento
+npm run dev
+
+# Rodar testes
+npm test
+Credenciais root (auto-criado)
+- E-mail: root@admin.com
+- Senha: admin123456

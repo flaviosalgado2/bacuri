@@ -1,0 +1,56 @@
+<script setup lang="ts">
+const { usuario, sair } = useAutenticacao()
+const rota = useRoute()
+const modoCor = useColorMode()
+
+const root = computed(() => usuario.value?.perfil === 'root')
+
+const itens = [
+  { label: 'Início', icon: 'i-lucide-layout-dashboard', to: '/' },
+  { label: 'A Pagar', icon: 'i-lucide-arrow-up-circle', to: '/contas/pagar' },
+  { label: 'A Receber', icon: 'i-lucide-arrow-down-circle', to: '/contas/receber' },
+  { label: 'Todas', icon: 'i-lucide-list', to: '/contas' }
+]
+
+const escuro = computed(() => modoCor.value === 'dark')
+</script>
+
+<template>
+  <USidebar variant="inset" class="h-full">
+    <template #header>
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded-lg bg-(--ui-primary) flex items-center justify-center">
+          <UIcon name="i-lucide-wallet" class="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h2 class="font-bold text-lg">Bacuri</h2>
+          <p class="text-xs text-(--ui-text-muted)">Finanças</p>
+        </div>
+      </div>
+    </template>
+
+    <UNavigationMenu :items="itens" orientation="vertical" />
+
+    <template #footer>
+      <USeparator class="my-2" />
+      <div class="px-2 py-2">
+        <div class="flex items-center gap-3 mb-3">
+          <UAvatar :text="usuario?.nome?.[0]" class="bg-(--ui-primary) text-white" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">{{ usuario?.nome }}</p>
+            <p class="text-xs text-(--ui-text-muted) truncate">{{ usuario?.email }}</p>
+          </div>
+          <UBadge v-if="root" color="warning" size="xs">Root</UBadge>
+        </div>
+        <div class="flex gap-2">
+          <UButton color="neutral" variant="ghost" :icon="escuro ? 'i-lucide-sun' : 'i-lucide-moon'" class="flex-1" @click="modoCor.preference = escuro ? 'light' : 'dark'">
+            {{ escuro ? 'Claro' : 'Escuro' }}
+          </UButton>
+          <UButton color="neutral" variant="ghost" icon="i-lucide-log-out" class="flex-1" @click="sair">
+            Sair
+          </UButton>
+        </div>
+      </div>
+    </template>
+  </USidebar>
+</template>
