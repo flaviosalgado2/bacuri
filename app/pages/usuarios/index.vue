@@ -23,7 +23,7 @@ async function remover(usuario: { id: number; nome: string }) {
           <h3 class="font-semibold">Lista de usuários</h3>
           <div class="flex gap-2">
             <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-ccw" :loading="pending" @click="refresh">Atualizar</UButton>
-            <UButton to="/usuarios/novo" color="primary" icon="i-lucide-user-plus">Novo usuário</UButton>
+            <UButton to="/usuarios/formulario" color="primary" icon="i-lucide-user-plus">Novo usuário</UButton>
           </div>
         </div>
       </template>
@@ -71,8 +71,8 @@ async function remover(usuario: { id: number; nome: string }) {
               </td>
               <td class="py-3 px-4 text-right">
                 <div class="flex justify-end gap-1">
-                  <UButton :to="`/usuarios/${u.id}`" color="neutral" variant="ghost" size="xs" icon="i-lucide-eye" title="Visualizar" />
-                  <UButton :to="`/usuarios/${u.id}/editar`" color="neutral" variant="ghost" size="xs" icon="i-lucide-pencil" title="Editar" />
+                  <UButton :to="`/usuarios/formulario?id=${u.id}`" color="neutral" variant="ghost" size="xs" icon="i-lucide-eye" title="Visualizar" />
+                  <UButton :to="`/usuarios/formulario?id=${u.id}&modo=editar`" color="neutral" variant="ghost" size="xs" icon="i-lucide-pencil" title="Editar" />
                   <UButton color="error" variant="ghost" size="xs" icon="i-lucide-user-x" title="Desativar" :disabled="u.perfil === 'root'" @click="remover(u)" />
                 </div>
               </td>
