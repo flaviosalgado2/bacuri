@@ -7,6 +7,8 @@
   <img src="https://img.shields.io/badge/PostgreSQL-18.x-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle&logoColor=black" alt="Drizzle ORM" />
   <img src="https://img.shields.io/badge/Vitest-4.x-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white" alt="Docker Compose" />
+  <img src="https://img.shields.io/badge/Zod-3.x-3068B7?logo=zod&logoColor=white" alt="Zod" />
 </p>
 
 **Bacuri** é uma aplicação web moderna para **controle financeiro pessoal**, focada no gerenciamento de **contas a pagar e a receber**. Com interface elegante, autenticação segura e painel de controle intuitivo, o Bacuri ajuda você a acompanhar vencimentos, saldos e status de pagamentos em um só lugar.
@@ -38,18 +40,55 @@
 
 ## Stack Tecnológica
 
-| Camada | Tecnologia |
-|--------|------------|
-| Framework frontend / full-stack | [Nuxt 4](https://nuxt.com/) |
-| UI framework | [Vue 3](https://vuejs.org/) + [Nuxt UI](https://ui.nuxt.com/) |
-| Linguagem | [TypeScript](https://www.typescriptlang.org/) |
-| Banco de dados | [PostgreSQL](https://www.postgresql.org/) |
-| ORM | [Drizzle ORM](https://orm.drizzle.team/) + Drizzle Kit |
-| Driver PostgreSQL | [pg](https://www.npmjs.com/package/pg) |
-| Autenticação | [nuxt-auth-utils](https://github.com/Atinux/nuxt-auth-utils) |
-| Validação | [Zod](https://zod.dev/) |
-| Testes | [Vitest](https://vitest.dev/) + [@nuxt/test-utils](https://test-utils.nuxtjs.org/) |
-| Containerização | [Docker](https://www.docker.com/) + Docker Compose |
+O Bacuri é construído com um conjunto moderno de ferramentas do ecossistema JavaScript/TypeScript, focado em performance, segurança e boa experiência de desenvolvimento.
+
+### Core da aplicação
+
+| Biblioteca | Badge | Finalidade |
+|------------|-------|------------|
+| [Nuxt 4](https://nuxt.com/) | <img src="https://img.shields.io/badge/Nuxt-4.x-00C58E?logo=nuxt.js&logoColor=white" alt="Nuxt" /> | Framework full-stack baseado em Vue. Responsável pelo SSR, rotas, API serverless (Nitro), build e DX. |
+| [Vue 3](https://vuejs.org/) | <img src="https://img.shields.io/badge/Vue-3.x-4FC08D?logo=vue.js&logoColor=white" alt="Vue" /> | Biblioteca reativa para construção da interface do usuário com Composition API. |
+| [Vue Router](https://router.vuejs.org/) | <img src="https://img.shields.io/badge/Vue_Router-4.x-4FC08D?logo=vue.js&logoColor=white" alt="Vue Router" /> | Gerenciamento de rotas do lado do cliente, integrado automaticamente pelo Nuxt. |
+| [TypeScript](https://www.typescriptlang.org/) | <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> | Adiciona tipagem estática ao JavaScript, aumentando segurança e autocomplete no editor. |
+
+### Interface e experiência do usuário
+
+| Biblioteca | Badge | Finalidade |
+|------------|-------|------------|
+| [@nuxt/ui](https://ui.nuxt.com/) | <img src="https://img.shields.io/badge/Nuxt_UI-4.x-00C58E?logo=nuxt.js&logoColor=white" alt="Nuxt UI" /> | Biblioteca de componentes de interface (botões, cards, formulários, modais) com estilização pronta e acessível. |
+| [@iconify-json/lucide](https://iconify.design/) | <img src="https://img.shields.io/badge/Iconify-Lucide-F565A9?logo=iconify&logoColor=white" alt="Iconify Lucide" /> | Conjunto de ícones vetoriais utilizados nos botões, menus e indicadores visuais. |
+
+### Banco de dados e ORM
+
+| Biblioteca | Badge | Finalidade |
+|------------|-------|------------|
+| [PostgreSQL](https://www.postgresql.org/) | <img src="https://img.shields.io/badge/PostgreSQL-18.x-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" /> | Banco de dados relacional robusto que armazena usuários e contas. |
+| [Drizzle ORM](https://orm.drizzle.team/) | <img src="https://img.shields.io/badge/Drizzle_ORM-0.x-C5F74F?logo=drizzle&logoColor=black" alt="Drizzle ORM" /> | ORM type-safe para TypeScript. Define o schema e executa queries SQL de forma programática. |
+| [Drizzle Kit](https://orm.drizzle.team/kit-docs/overview) | <img src="https://img.shields.io/badge/Drizzle_Kit-0.x-C5F74F?logo=drizzle&logoColor=black" alt="Drizzle Kit" /> | CLI responsável por gerar e aplicar migrations de banco de dados. |
+| [pg](https://www.npmjs.com/package/pg) | <img src="https://img.shields.io/badge/pg-8.x-4169E1?logo=postgresql&logoColor=white" alt="pg" /> | Driver oficial do Node.js para conexão com PostgreSQL. |
+| [@types/pg](https://www.npmjs.com/package/@types/pg) | <img src="https://img.shields.io/badge/@types/pg-8.x-3178C6?logo=typescript&logoColor=white" alt="@types/pg" /> | Tipagens TypeScript para o driver `pg`. |
+
+### Autenticação e validação
+
+| Biblioteca | Badge | Finalidade |
+|------------|-------|------------|
+| [nuxt-auth-utils](https://github.com/Atinux/nuxt-auth-utils) | <img src="https://img.shields.io/badge/nuxt--auth--utils-0.x-00C58E?logo=nuxt.js&logoColor=white" alt="nuxt-auth-utils" /> | Módulo do Nuxt para autenticação baseada em sessão, gerenciando login, logout e rotas protegidas. |
+| [Zod](https://zod.dev/) | <img src="https://img.shields.io/badge/Zod-4.x-3068B7?logo=zod&logoColor=white" alt="Zod" /> | Biblioteca de validação e inferência de tipos. Garante que dados de entrada (formulários, API) estejam corretos. |
+
+### Testes
+
+| Biblioteca | Badge | Finalidade |
+|------------|-------|------------|
+| [Vitest](https://vitest.dev/) | <img src="https://img.shields.io/badge/Vitest-4.x-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /> | Test runner rápido e moderno, compatível com a API do Jest. |
+| [@nuxt/test-utils](https://test-utils.nuxtjs.org/) | <img src="https://img.shields.io/badge/@nuxt/test_utils-4.x-00C58E?logo=nuxt.js&logoColor=white" alt="@nuxt/test-utils" /> | Utilitários oficiais do Nuxt para testar componentes e endpoints de forma integrada. |
+| [happy-dom](https://github.com/capricorn86/happy-dom) | <img src="https://img.shields.io/badge/happy--dom-20.x-FF6F00?logo=html5&logoColor=white" alt="happy-dom" /> | Implementação leve do DOM para execução de testes de componentes sem precisar de navegador real. |
+
+### Containerização e infraestrutura
+
+| Ferramenta | Badge | Finalidade |
+|------------|-------|------------|
+| [Docker](https://www.docker.com/) | <img src="https://img.shields.io/badge/Docker-24.x-2496ED?logo=docker&logoColor=white" alt="Docker" /> | Cria containers isolados para a aplicação Node.js e o banco PostgreSQL. |
+| [Docker Compose](https://docs.docker.com/compose/) | <img src="https://img.shields.io/badge/Docker_Compose-2.x-2496ED?logo=docker&logoColor=white" alt="Docker Compose" /> | Orquestra os containers de desenvolvimento com um único comando. |
 
 ---
 
