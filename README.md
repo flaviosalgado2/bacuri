@@ -228,19 +228,24 @@ O schema está definido em `server/db/schema.ts` e contém as tabelas:
 
 ## Estrutura do projeto
 
+O Bacuri segue a convenção full-stack do Nuxt 4, onde o frontend e o backend convivem no mesmo repositório, mas com responsabilidades bem separadas:
+
+- **`app/`** → **Frontend**: interface do usuário construída com Vue 3 e Nuxt UI.
+- **`server/`** → **Backend**: API REST, banco de dados e lógica de negócio executada pelo Nitro (motor do Nuxt).
+
 ```
 bacuri/
-├── app/                    # Aplicação Nuxt (Vue)
+├── app/                    # FRONTEND — Interface Vue/Nuxt
 │   ├── components/         # Componentes Vue reutilizáveis
-│   ├── composables/        # Composables (autenticação, contas)
-│   ├── layouts/            # Layouts da aplicação
-│   ├── middleware/         # Middlewares de rota (logado, visitante)
-│   ├── pages/              # Páginas e rotas
+│   ├── composables/        # Lógica reutilizável do frontend
+│   ├── layouts/            # Layouts das páginas
+│   ├── middleware/         # Proteção de rotas no frontend
+│   ├── pages/              # Rotas e telas da aplicação
 │   └── assets/             # CSS e recursos estáticos
-├── server/                 # API e lógica do servidor (Nitro)
-│   ├── api/                # Endpoints da API
+├── server/                 # BACKEND — API Nitro
+│   ├── api/                # Endpoints REST
 │   ├── db/                 # Schema e migrations do Drizzle
-│   ├── plugins/            # Plugins do Nitro (init, migrations)
+│   ├── plugins/            # Inicialização e migrations automáticas
 │   └── utils/              # Utilitários do servidor
 ├── public/                 # Arquivos públicos
 ├── tests/                  # Testes com Vitest
