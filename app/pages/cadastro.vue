@@ -20,8 +20,13 @@ const carregando = ref(false)
 
 async function enviar() {
   carregando.value = true
-  try { await cadastrar({ nome: estado.nome!, email: estado.email!, senha: estado.senha! }) }
-  finally { carregando.value = false }
+  try {
+    await cadastrar({ nome: estado.nome!, email: estado.email!, senha: estado.senha! })
+  } catch {
+    // erro já tratado pelo composable (toast)
+  } finally {
+    carregando.value = false
+  }
 }
 </script>
 

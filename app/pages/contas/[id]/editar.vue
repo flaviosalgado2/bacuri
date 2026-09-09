@@ -36,7 +36,11 @@ async function enviar() {
   try {
     await atualizar(id, formulario)
     router.push('/contas')
-  } finally { carregando.value = false }
+  } catch {
+    // erro já tratado pelo composable (toast)
+  } finally {
+    carregando.value = false
+  }
 }
 </script>
 

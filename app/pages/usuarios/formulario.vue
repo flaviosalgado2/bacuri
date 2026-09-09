@@ -37,6 +37,8 @@ async function enviar(dados: DadosUsuario & { senha?: string }) {
     if (modo.value === 'criar') await criar(dados as DadosUsuario & { senha: string })
     else if (id.value) await atualizar(id.value, dados)
     router.push('/usuarios')
+  } catch {
+    // erro já tratado pelo composable (toast)
   } finally {
     carregando.value = false
   }

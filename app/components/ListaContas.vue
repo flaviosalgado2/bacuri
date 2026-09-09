@@ -11,14 +11,22 @@ const formatarData = (d: string) => new Date(d).toLocaleDateString('pt-BR')
 const atrasada = (c: Conta) => c.status === 'pendente' && new Date(c.vencimento) < new Date().setHours(0, 0, 0, 0)
 
 async function toggle(c: Conta) {
-  await mudarStatus(c.id, c.status === 'pago' ? 'pendente' : 'pago')
-  emit('atualizar')
+  try {
+    await mudarStatus(c.id, c.status === 'pago' ? 'pendente' : 'pago')
+    emit('atualizar')
+  } catch {
+    // erro já tratado pelo composable (toast)
+  }
 }
 
 async function remover(c: Conta) {
   if (!confirm(`Deseja realmente excluir a conta "${c.nome}"? Esta ação não pode ser desfeita.`)) return
-  await excluir(c.id)
-  emit('atualizar')
+  try {
+    await excluir(c.id)
+    emit('atualizar')
+  } catch {
+    // erro já tratado pelo composable (toast)
+  }
 }
 </script>
 

@@ -10,8 +10,12 @@ const { data: usuarios, pending, error, refresh } = await useFetch('/api/usuario
 
 async function remover(usuario: { id: number; nome: string }) {
   if (!confirm(`Deseja desativar o usuário "${usuario.nome}"? Ele não poderá mais acessar o sistema.`)) return
-  await desativar(usuario.id)
-  refresh()
+  try {
+    await desativar(usuario.id)
+    refresh()
+  } catch {
+    // erro já tratado pelo composable (toast)
+  }
 }
 </script>
 

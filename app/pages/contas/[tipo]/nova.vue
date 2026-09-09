@@ -29,7 +29,11 @@ async function enviar() {
   try {
     await criar(formulario)
     router.push(`/contas/${tipo}`)
-  } finally { carregando.value = false }
+  } catch {
+    // erro já tratado pelo composable (toast)
+  } finally {
+    carregando.value = false
+  }
 }
 </script>
 
