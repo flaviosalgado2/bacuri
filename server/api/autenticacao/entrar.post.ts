@@ -13,6 +13,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'E-mail ou senha inválidos' })
   }
 
+  if (!usuario.ativo) {
+    throw createError({ statusCode: 403, statusMessage: 'Usuário desativado. Entre em contato com o administrador.' })
+  }
+
   await setUserSession(event, { user: usuarioSemSenha(usuario) })
   return usuarioSemSenha(usuario)
 })

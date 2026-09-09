@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp, integer, decimal, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, serial, varchar, text, timestamp, integer, decimal, boolean, pgEnum } from 'drizzle-orm/pg-core'
 
 export const perfilEnum = pgEnum('perfil', ['usuario', 'root'])
 export const tipoEnum = pgEnum('tipo', ['pagar', 'receber'])
@@ -10,6 +10,7 @@ export const usuarios = pgTable('usuarios', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   senhaHash: varchar('senha_hash', { length: 255 }).notNull(),
   perfil: perfilEnum('perfil').notNull().default('usuario'),
+  ativo: boolean('ativo').notNull().default(true),
   criadoEm: timestamp('criado_em').notNull().defaultNow()
 })
 

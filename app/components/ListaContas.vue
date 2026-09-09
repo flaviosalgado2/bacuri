@@ -55,9 +55,9 @@ async function remover(c: Conta) {
           </td>
           <td class="py-3 px-4 text-right">
             <div class="flex justify-end gap-1">
-              <UButton :color="c.status === 'pago' ? 'warning' : 'success'" variant="ghost" size="xs" :icon="c.status === 'pago' ? 'i-lucide-rotate-ccw' : 'i-lucide-check'" @click="toggle(c)" />
-              <UButton :to="`/contas/${c.id}/editar`" color="neutral" variant="ghost" size="xs" icon="i-lucide-pencil" />
-              <UButton color="error" variant="ghost" size="xs" icon="i-lucide-trash-2" @click="remover(c)" />
+              <UButton :color="c.status === 'pago' ? 'warning' : 'success'" variant="ghost" size="xs" :icon="c.status === 'pago' ? 'i-lucide-circle-x' : 'i-lucide-circle-check'" :title="c.status === 'pago' ? 'Marcar como pendente' : 'Marcar como pago'" @click="toggle(c)" />
+              <UButton :to="`/contas/${c.id}/editar`" color="neutral" variant="ghost" size="xs" icon="i-lucide-pencil" title="Editar" />
+              <UButton color="error" variant="ghost" size="xs" icon="i-lucide-trash-2" title="Excluir" @click="remover(c)" />
             </div>
           </td>
         </tr>

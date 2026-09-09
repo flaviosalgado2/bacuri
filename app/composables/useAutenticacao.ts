@@ -3,6 +3,7 @@ export interface Usuario {
   nome: string
   email: string
   perfil: 'usuario' | 'root'
+  ativo: boolean
   criadoEm: string
 }
 

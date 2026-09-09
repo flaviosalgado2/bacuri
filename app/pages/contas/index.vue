@@ -31,17 +31,17 @@ function limpar() {
       <template #header>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex flex-wrap items-end gap-3">
-            <UFormField label="Tipo" class="w-40">
-              <USelect v-model="filtros.tipo" :items="[{ label: 'Todos' }, { label: 'Pagar', value: 'pagar' }, { label: 'Receber', value: 'receber' }]" @update:model-value="aplicar" />
+            <UFormField label="Tipo" class="w-48">
+              <USelect v-model="filtros.tipo" :items="[{ label: 'Todos' }, { label: 'Contas a pagar', value: 'pagar' }, { label: 'Contas a receber', value: 'receber' }]" @update:model-value="aplicar" />
             </UFormField>
-            <UFormField label="Status" class="w-40">
+            <UFormField label="Status" class="w-44">
               <USelect v-model="filtros.status" :items="[{ label: 'Todos' }, { label: 'Pendente', value: 'pendente' }, { label: 'Pago', value: 'pago' }]" @update:model-value="aplicar" />
             </UFormField>
-            <UFormField label="De" class="w-40"><UInput v-model="filtros.de" type="date" @change="aplicar" /></UFormField>
-            <UFormField label="Até" class="w-40"><UInput v-model="filtros.ate" type="date" @change="aplicar" /></UFormField>
-            <UButton color="neutral" variant="ghost" icon="i-lucide-x" @click="limpar">Limpar</UButton>
+            <UFormField label="De" class="w-44"><UInput v-model="filtros.de" type="date" icon="i-lucide-calendar" @change="aplicar" /></UFormField>
+            <UFormField label="Até" class="w-44"><UInput v-model="filtros.ate" type="date" icon="i-lucide-calendar" @change="aplicar" /></UFormField>
+            <UButton color="neutral" variant="ghost" icon="i-lucide-filter-x" @click="limpar">Limpar</UButton>
           </div>
-          <UButton to="/contas/nova" color="primary" icon="i-lucide-plus">Nova</UButton>
+          <UButton to="/contas/nova" color="primary" icon="i-lucide-plus">Nova conta</UButton>
         </div>
       </template>
 

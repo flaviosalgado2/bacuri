@@ -13,13 +13,13 @@ const { data: contas, pending, refresh } = await useLazyAsyncData(() => listar(f
       <template #header>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex flex-wrap items-end gap-3">
-            <UFormField label="Status" class="w-40">
+            <UFormField label="Status" class="w-44">
               <USelect v-model="filtros.status" :items="[{ label: 'Todos' }, { label: 'Pendente', value: 'pendente' }, { label: 'Recebido', value: 'pago' }]" />
             </UFormField>
-            <UFormField label="De" class="w-40"><UInput v-model="filtros.de" type="date" /></UFormField>
-            <UFormField label="Até" class="w-40"><UInput v-model="filtros.ate" type="date" /></UFormField>
+            <UFormField label="De" class="w-44"><UInput v-model="filtros.de" type="date" icon="i-lucide-calendar" /></UFormField>
+            <UFormField label="Até" class="w-44"><UInput v-model="filtros.ate" type="date" icon="i-lucide-calendar" /></UFormField>
           </div>
-          <UButton to="/contas/receber/nova" color="success" icon="i-lucide-plus">Nova</UButton>
+          <UButton to="/contas/receber/nova" color="success" icon="i-lucide-hand-coins">Nova conta</UButton>
         </div>
       </template>
 

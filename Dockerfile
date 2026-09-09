@@ -6,4 +6,6 @@ RUN apt-get update \
 
 WORKDIR /app
 
+USER node
+
 CMD ["tail", "-f", "/dev/null"]

@@ -28,20 +28,40 @@ const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
     <template v-else>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <UCard>
-          <p class="text-sm text-(--ui-text-muted)">Total a Pagar</p>
-          <p class="text-2xl font-bold text-red-500">{{ moeda(totalPagar) }}</p>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Total a Pagar</p>
+              <p class="text-2xl font-bold text-red-500">{{ moeda(totalPagar) }}</p>
+            </div>
+            <UIcon name="i-lucide-receipt" class="w-6 h-6 text-red-500" />
+          </div>
         </UCard>
         <UCard>
-          <p class="text-sm text-(--ui-text-muted)">Total a Receber</p>
-          <p class="text-2xl font-bold text-emerald-500">{{ moeda(totalReceber) }}</p>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Total a Receber</p>
+              <p class="text-2xl font-bold text-emerald-500">{{ moeda(totalReceber) }}</p>
+            </div>
+            <UIcon name="i-lucide-hand-coins" class="w-6 h-6 text-emerald-500" />
+          </div>
         </UCard>
         <UCard>
-          <p class="text-sm text-(--ui-text-muted)">Saldo</p>
-          <p class="text-2xl font-bold" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'">{{ moeda(saldo) }}</p>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Saldo</p>
+              <p class="text-2xl font-bold" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'">{{ moeda(saldo) }}</p>
+            </div>
+            <UIcon name="i-lucide-scale" class="w-6 h-6" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'" />
+          </div>
         </UCard>
         <UCard>
-          <p class="text-sm text-(--ui-text-muted)">Pendentes</p>
-          <p class="text-2xl font-bold">{{ pendentes.length }}</p>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Pendentes</p>
+              <p class="text-2xl font-bold">{{ pendentes.length }}</p>
+            </div>
+            <UIcon name="i-lucide-clock-alert" class="w-6 h-6 text-(--ui-warning)" />
+          </div>
         </UCard>
       </div>
 
@@ -49,8 +69,8 @@ const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
         <UCard class="lg:col-span-2">
           <template #header><h3 class="font-semibold">Ações rápidas</h3></template>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <UButton to="/contas/pagar/nova" color="error" variant="soft" size="xl" block icon="i-lucide-plus">Nova conta a pagar</UButton>
-            <UButton to="/contas/receber/nova" color="success" variant="soft" size="xl" block icon="i-lucide-plus">Nova conta a receber</UButton>
+            <UButton to="/contas/pagar/nova" color="error" variant="soft" size="xl" block icon="i-lucide-receipt">Nova conta a pagar</UButton>
+            <UButton to="/contas/receber/nova" color="success" variant="soft" size="xl" block icon="i-lucide-hand-coins">Nova conta a receber</UButton>
           </div>
         </UCard>
 

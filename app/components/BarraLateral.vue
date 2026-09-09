@@ -5,12 +5,27 @@ const modoCor = useColorMode()
 
 const root = computed(() => usuario.value?.perfil === 'root')
 
-const itens = [
+const itens = ref([
   { label: 'Início', icon: 'i-lucide-layout-dashboard', to: '/' },
-  { label: 'A Pagar', icon: 'i-lucide-arrow-up-circle', to: '/contas/pagar' },
-  { label: 'A Receber', icon: 'i-lucide-arrow-down-circle', to: '/contas/receber' },
-  { label: 'Todas', icon: 'i-lucide-list', to: '/contas' }
-]
+  { label: 'Contas a pagar', icon: 'i-lucide-receipt', to: '/contas/pagar' },
+  { label: 'Contas a receber', icon: 'i-lucide-hand-coins', to: '/contas/receber' },
+  { label: 'Todas as contas', icon: 'i-lucide-list-checks', to: '/contas' }
+])
+
+watchEffect(() => {
+  const base = [
+    { label: 'Início', icon: 'i-lucide-layout-dashboard', to: '/' },
+    { label: 'Contas a pagar', icon: 'i-lucide-receipt', to: '/contas/pagar' },
+    { label: 'Contas a receber', icon: 'i-lucide-hand-coins', to: '/contas/receber' },
+    { label: 'Todas as contas', icon: 'i-lucide-list-checks', to: '/contas' }
+  ]
+
+  if (root.value) {
+    base.push({ label: 'Usuários', icon: 'i-lucide-users', to: '/usuarios' })
+  }
+
+  itens.value = base
+})
 
 const escuro = computed(() => modoCor.value === 'dark')
 </script>

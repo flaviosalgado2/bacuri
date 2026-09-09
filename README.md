@@ -32,6 +32,7 @@
   - Cadastro e login
   - Perfis `usuario` e `root`
   - Usuário root criado automaticamente na primeira execução
+  - Apenas o root pode cadastrar, editar e desativar outros usuários
 - **Migrações automáticas** do banco de dados no startup
 - **Interface responsiva** com Nuxt UI
 - **Testes automatizados** com Vitest
@@ -239,8 +240,10 @@ bacuri/
 │   ├── components/         # Componentes Vue reutilizáveis
 │   ├── composables/        # Lógica reutilizável do frontend
 │   ├── layouts/            # Layouts das páginas
-│   ├── middleware/         # Proteção de rotas no frontend
+│   ├── middleware/         # Proteção de rotas (logado, root, visitante)
 │   ├── pages/              # Rotas e telas da aplicação
+│   │   ├── contas/         # Gestão de contas a pagar/receber
+│   │   └── usuarios/       # Gestão de usuários (exclusivo para root)
 │   └── assets/             # CSS e recursos estáticos
 ├── server/                 # BACKEND — API Nitro
 │   ├── api/                # Endpoints REST
