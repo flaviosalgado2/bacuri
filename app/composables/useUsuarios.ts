@@ -1,19 +1,7 @@
-interface UsuarioGerenciado {
-  id: number
-  nome: string
-  email: string
-  perfil: 'usuario' | 'root'
-  ativo: boolean
-  criadoEm: string
-}
+import { usuarioService } from '~/services/usuarioService'
+import type { DadosUsuario, UsuarioGerenciado } from '~/services/usuarioService'
 
-interface DadosUsuario {
-  nome: string
-  email: string
-  senha?: string
-  perfil: 'usuario' | 'root'
-  ativo: boolean
-}
+export type { DadosUsuario, UsuarioGerenciado }
 
 export function useUsuarios() {
   const toast = useToast()
@@ -27,42 +15,43 @@ export function useUsuarios() {
     throw err
   }
 
-  const sucesso = (titulo: string, descricao?: string) => toast.add({ title: titulo, description: descricao, color: 'success' })
+  const sucesso = (titulo: string, descricao?: string) =>
+    toast.add({ title: titulo, description: descricao, color: 'success' })
 
-  async function listar() {
+  const executar = async <T>(acao: () => Promise<T>, mensagens: { sucesso: string; descricao?: string; erro: string }) => {
     try {
-      return await $fetch<UsuarioGerenciado[]>('/api/usuarios')
-    } catch (err) { tratarErro(err, 'Erro ao carregar usuários') }
+      const resultado = await acao()
+      sucesso(mensagens.sucesso, mensagens.descricao)
+      return resultado
+    } catch (err) {
+      tratarErro(err, mensagens.erro)
+    }
   }
 
-  async function buscar(id: number) {
-    try {
-      return await $fetch<UsuarioGerenciado>(`/api/usuarios/${id}`)
-    } catch (err) { tratarErro(err, 'Erro ao carregar usuário') }
-  }
+  return {
+    listar: () => executar(
+      () => usuarioService.listar(),
+      { sucesso: 'Usuários carregados', erro: 'Erro ao carregar usuários' }
+    ),
 
-  async function criar(dados: DadosUsuario & { senha: string }) {
-    try {
-      const usuario = await $fetch<UsuarioGerenciado>('/api/usuarios', { method: 'POST', body: dados })
-      sucesso('Usuário criado', `"${usuario.nome}" foi cadastrado com sucesso.`)
-      return usuario
-    } catch (err) { tratarErro(err, 'Erro ao criar usuário') }
-  }
+    buscar: (id: number) => executar(
+      () => usuarioService.buscar(id),
+      { sucesso: 'Usuário carregado', erro: 'Erro ao carregar usuário' }
+    ),
 
-  async function atualizar(id: number, dados: Partial<DadosUsuario>) {
-    try {
-      const usuario = await $fetch<UsuarioGerenciado>(`/api/usuarios/${id}`, { method: 'PUT', body: dados })
-      sucesso('Usuário atualizado', `"${usuario.nome}" foi atualizado com sucesso.`)
-      return usuario
-    } catch (err) { tratarErro(err, 'Erro ao atualizar usuário') }
-  }
+    criar: (dados: DadosUsuario & { senha: string }) => executar(
+      () => usuarioService.criar(dados),
+      { sucesso: 'Usuário criado', descricao: `"${dados.nome}" foi cadastrado com sucesso.`, erro: 'Erro ao criar usuário' }
+    ),
 
-  async function desativar(id: number) {
-    try {
-      await $fetch(`/api/usuarios/${id}`, { method: 'DELETE' })
-      sucesso('Usuário desativado', 'O usuário foi desativado com sucesso.')
-    } catch (err) { tratarErro(err, 'Erro ao desativar usuário') }
-  }
+    atualizar: (id: number, dados: Partial<DadosUsuario>) => executar(
+      () => usuarioService.atualizar(id, dados),
+      { sucesso: 'Usuário atualizado', erro: 'Erro ao atualizar usuário' }
+    ),
 
-  return { listar, buscar, criar, atualizar, desativar }
+    desativar: (id: number) => executar(
+      () => usuarioService.desativar(id),
+      { sucesso: 'Usuário desativado', descricao: 'O usuário foi desativado com sucesso.', erro: 'Erro ao desativar usuário' }
+    )
+  }
 }

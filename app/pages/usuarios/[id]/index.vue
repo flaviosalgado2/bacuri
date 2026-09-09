@@ -1,24 +1,12 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'padrao', middleware: 'root', titulo: 'Editar Usuário', subtitulo: 'Altere os dados do usuário' })
-useHead({ title: 'Editar Usuário - Bacuri' })
+definePageMeta({ layout: 'padrao', middleware: 'root', titulo: 'Visualizar Usuário', subtitulo: 'Detalhes do usuário' })
+useHead({ title: 'Visualizar Usuário - Bacuri' })
 
 const rota = useRoute()
 const router = useRouter()
-const { atualizar } = useUsuarios()
 const id = Number(rota.params.id)
 
 const { data: usuario, pending } = await useFetch(`/api/usuarios/${id}`)
-const carregando = ref(false)
-
-async function enviar(dados: Parameters<typeof atualizar>[1]) {
-  carregando.value = true
-  try {
-    await atualizar(id, dados)
-    router.push('/usuarios')
-  } finally {
-    carregando.value = false
-  }
-}
 </script>
 
 <template>
@@ -31,10 +19,8 @@ async function enviar(dados: Parameters<typeof atualizar>[1]) {
 
     <UsuarioFormulario
       v-else
-      modo="editar"
+      modo="visualizar"
       :usuario="usuario"
-      :carregando="carregando"
-      @submit="enviar"
       @cancelar="router.push('/usuarios')"
     />
   </div>

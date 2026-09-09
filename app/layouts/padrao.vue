@@ -11,6 +11,5 @@
       </main>
     </div>
 
-    <UNotifications />
   </div>
 </template>
