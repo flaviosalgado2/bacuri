@@ -65,7 +65,7 @@ const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
         </UCard>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <UCard class="lg:col-span-2">
           <template #header><h3 class="font-semibold">Ações rápidas</h3></template>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -93,6 +93,11 @@ const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
           </ul>
         </UCard>
       </div>
+
+      <UCard>
+        <template #header><h3 class="font-semibold">Despesas mensais</h3></template>
+        <GraficoDespesasMensais :contas="contas || []" />
+      </UCard>
     </template>
   </div>
 </template>
