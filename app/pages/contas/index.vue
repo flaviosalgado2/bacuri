@@ -7,10 +7,10 @@ const rota = useRoute()
 const router = useRouter()
 
 const filtros = reactive({
-  tipo: rota.query.tipo as 'pagar' | 'receber' | undefined,
-  status: rota.query.status as 'pendente' | 'pago' | undefined,
-  de: rota.query.de as string | undefined,
-  ate: rota.query.ate as string | undefined
+  tipo: (rota.query.tipo ?? null) as 'pagar' | 'receber' | null,
+  status: (rota.query.status ?? null) as 'pendente' | 'pago' | null,
+  de: (rota.query.de ?? null) as string | null,
+  ate: (rota.query.ate ?? null) as string | null
 })
 
 const { data: contas, pending, refresh } = await useLazyAsyncData('contas', () => listar(filtros), { watch: [filtros] })
@@ -20,7 +20,7 @@ function aplicar() {
 }
 
 function limpar() {
-  Object.assign(filtros, { tipo: undefined, status: undefined, de: undefined, ate: undefined })
+  Object.assign(filtros, { tipo: null, status: null, de: null, ate: null })
   router.push({ query: {} })
 }
 </script>
@@ -32,10 +32,10 @@ function limpar() {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex flex-wrap items-end gap-3">
             <UFormField label="Tipo" class="w-48">
-              <USelect v-model="filtros.tipo" :items="[{ label: 'Todos' }, { label: 'Contas a pagar', value: 'pagar' }, { label: 'Contas a receber', value: 'receber' }]" @update:model-value="aplicar" />
+              <USelect v-model="filtros.tipo" :items="[{ label: 'Todos', value: null }, { label: 'Contas a pagar', value: 'pagar' }, { label: 'Contas a receber', value: 'receber' }]" class="w-full" @update:model-value="aplicar" />
             </UFormField>
             <UFormField label="Status" class="w-44">
-              <USelect v-model="filtros.status" :items="[{ label: 'Todos' }, { label: 'Pendente', value: 'pendente' }, { label: 'Pago', value: 'pago' }]" @update:model-value="aplicar" />
+              <USelect v-model="filtros.status" :items="[{ label: 'Todos', value: null }, { label: 'Pendente', value: 'pendente' }, { label: 'Pago', value: 'pago' }]" class="w-full" @update:model-value="aplicar" />
             </UFormField>
             <UFormField label="De" class="w-44"><UInput v-model="filtros.de" type="date" icon="i-lucide-calendar" @change="aplicar" /></UFormField>
             <UFormField label="Até" class="w-44"><UInput v-model="filtros.ate" type="date" icon="i-lucide-calendar" @change="aplicar" /></UFormField>

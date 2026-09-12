@@ -13,10 +13,10 @@ export interface Conta {
 }
 
 export interface FiltrosConta {
-  tipo?: 'pagar' | 'receber'
-  status?: 'pendente' | 'pago'
-  de?: string
-  ate?: string
+  tipo?: 'pagar' | 'receber' | null
+  status?: 'pendente' | 'pago' | null
+  de?: string | null
+  ate?: string | null
 }
 
 export interface FormularioConta {
@@ -46,7 +46,10 @@ export function useContas() {
 
   async function listar(filtros: FiltrosConta = {}) {
     try {
-      return await apiFetch<Conta[]>('/api/contas', { query: filtros })
+      const query = Object.fromEntries(
+        Object.entries(filtros).filter(([, v]) => v != null && v !== '')
+      )
+      return await apiFetch<Conta[]>('/api/contas', { query })
     } catch (err) { tratarErro(err, 'Erro ao carregar contas') }
   }
 
