@@ -8,6 +8,6 @@
       <slot />
     </div>
 
-    <UNotifications />
+    <UToaster />
   </div>
 </template>
