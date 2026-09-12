@@ -31,6 +31,7 @@ export interface FormularioConta {
 
 export function useContas() {
   const toast = useToast()
+  const apiFetch = import.meta.server ? useRequestFetch() : $fetch
 
   const tratarErro = (err: any, padrao: string) => {
     toast.add({
@@ -45,13 +46,13 @@ export function useContas() {
 
   async function listar(filtros: FiltrosConta = {}) {
     try {
-      return await $fetch<Conta[]>('/api/contas', { query: filtros })
+      return await apiFetch<Conta[]>('/api/contas', { query: filtros })
     } catch (err) { tratarErro(err, 'Erro ao carregar contas') }
   }
 
   async function buscar(id: number) {
     try {
-      return await $fetch<Conta>(`/api/contas/${id}`)
+      return await apiFetch<Conta>(`/api/contas/${id}`)
     } catch (err) { tratarErro(err, 'Erro ao carregar conta') }
   }
 
