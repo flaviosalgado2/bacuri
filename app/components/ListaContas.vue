@@ -10,23 +10,54 @@ const formatarValor = (v: string) => new Intl.NumberFormat('pt-BR', { style: 'cu
 const formatarData = (d: string) => new Date(d).toLocaleDateString('pt-BR')
 const atrasada = (c: Conta) => c.status === 'pendente' && new Date(c.vencimento) < new Date().setHours(0, 0, 0, 0)
 
+const modalAberto = ref(false)
+const modalTitulo = ref('')
+const modalDescricao = ref('')
+const modalCor = ref('primary')
+const modalAcao = ref<() => void>(() => {})
+
+function abrirConfirmacao(titulo: string, descricao: string, cor: string, acao: () => void) {
+  modalTitulo.value = titulo
+  modalDescricao.value = descricao
+  modalCor.value = cor
+  modalAcao.value = acao
+  modalAberto.value = true
+}
+
+function confirmar() {
+  modalAcao.value()
+  modalAberto.value = false
+}
+
 async function toggle(c: Conta) {
-  try {
-    await mudarStatus(c.id, c.status === 'pago' ? 'pendente' : 'pago')
-    emit('atualizar')
-  } catch {
-    // erro já tratado pelo composable (toast)
-  }
+  const novoStatus = c.status === 'pago' ? 'pendente' : 'pago'
+  const titulo = novoStatus === 'pago' ? 'Marcar como pago' : 'Marcar como pendente'
+  const descricao = `Deseja alterar o status da conta "${c.nome}" para ${novoStatus === 'pago' ? 'pago' : 'pendente'}?`
+
+  abrirConfirmacao(titulo, descricao, 'success', async () => {
+    try {
+      await mudarStatus(c.id, novoStatus)
+      emit('atualizar')
+    } catch {
+      // erro já tratado pelo composable (toast)
+    }
+  })
 }
 
 async function remover(c: Conta) {
-  if (!confirm(`Deseja realmente excluir a conta "${c.nome}"? Esta ação não pode ser desfeita.`)) return
-  try {
-    await excluir(c.id)
-    emit('atualizar')
-  } catch {
-    // erro já tratado pelo composable (toast)
-  }
+  abrirConfirmacao(
+    'Excluir conta',
+    `Deseja realmente excluir a conta "${c.nome}"? Esta ação não pode ser desfeita.`,
+    'error',
+    async () => {
+      try {
+        await excluir(c.id)
+        emit('atualizar')
+      } catch {
+        // erro já tratado pelo composable (toast)
+      }
+    }
+  )
 }
 </script>
 
@@ -76,5 +107,14 @@ async function remover(c: Conta) {
       <UIcon name="i-lucide-inbox" class="w-12 h-12 mx-auto mb-3" />
       <p>Nenhuma conta encontrada</p>
     </div>
+
+    <UModal v-model:open="modalAberto" :title="modalTitulo" :description="modalDescricao">
+      <template #footer>
+        <div class="flex justify-end gap-2 w-full">
+          <UButton color="neutral" variant="ghost" @click="modalAberto = false">Cancelar</UButton>
+          <UButton :color="modalCor" @click="confirmar">Confirmar</UButton>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
