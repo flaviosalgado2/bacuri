@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, desc } from 'drizzle-orm'
+import { and, eq, gte, lte, asc } from 'drizzle-orm'
 import { contas, type Conta, type NovaConta } from '../db/schema'
 
 export type Filtros = {
@@ -23,7 +23,7 @@ function montarFiltros(filtros: Filtros) {
 
 export async function listarContas(filtros: Filtros = {}): Promise<Conta[]> {
   const banco = usarBanco()
-  return banco.select().from(contas).where(montarFiltros(filtros)).orderBy(desc(contas.vencimento))
+  return banco.select().from(contas).where(montarFiltros(filtros)).orderBy(asc(contas.vencimento))
 }
 
 export async function buscarConta(id: number): Promise<Conta | undefined> {
