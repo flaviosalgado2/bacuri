@@ -82,7 +82,7 @@ const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
           </div>
           <ul v-else class="space-y-3">
             <li v-for="c in proximas" :key="c.id">
-              <ULink :to="`/contas/${c.tipo}?destaque=${c.id}`" class="flex justify-between p-3 rounded-lg bg-(--ui-bg-muted) hover:bg-(--ui-bg-elevated)/50 transition-colors">
+              <ULink :to="`/contas/${c.tipo}?destaque=${c.id}`" class="flex justify-between p-3 rounded-lg transition-colors" :class="c.tipo === 'pagar' ? 'bg-red-500/10 hover:bg-red-500/20' : 'bg-emerald-500/10 hover:bg-emerald-500/20'">
                 <div>
                   <p class="font-medium text-sm">{{ c.nome }}</p>
                   <p class="text-xs text-(--ui-text-muted)">Vence em {{ data(c.vencimento) }}</p>
