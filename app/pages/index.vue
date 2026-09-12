@@ -3,12 +3,14 @@ definePageMeta({ layout: 'padrao', middleware: 'logado', titulo: 'Dashboard', su
 useHead({ title: 'Dashboard - Bacuri' })
 
 const { listar } = useContas()
-const { data: contas, pending } = await useLazyAsyncData('dashboard', () => listar(), { default: () => [] })
+const { data: resultado, pending } = await useLazyAsyncData('dashboard', () => listar(), { default: () => ({ contas: [], total: 0, temMais: false }) })
 
-const totalPagar = computed(() => contas.value?.filter(c => c.tipo === 'pagar').reduce((a, c) => a + Number(c.valor), 0) ?? 0)
-const totalReceber = computed(() => contas.value?.filter(c => c.tipo === 'receber').reduce((a, c) => a + Number(c.valor), 0) ?? 0)
+const contas = computed(() => resultado.value?.contas ?? [])
+
+const totalPagar = computed(() => contas.value.filter(c => c.tipo === 'pagar').reduce((a, c) => a + Number(c.valor), 0))
+const totalReceber = computed(() => contas.value.filter(c => c.tipo === 'receber').reduce((a, c) => a + Number(c.valor), 0))
 const saldo = computed(() => totalReceber.value - totalPagar.value)
-const pendentes = computed(() => contas.value?.filter(c => c.status === 'pendente') ?? [])
+const pendentes = computed(() => contas.value.filter(c => c.status === 'pendente'))
 
 const proximas = computed(() => {
   const limite = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)

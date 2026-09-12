@@ -21,6 +21,17 @@ export interface FiltrosConta {
   ate?: string | null
 }
 
+export interface Paginacao {
+  pagina: number
+  limite: number
+}
+
+export interface ResultadoListagemContas {
+  contas: Conta[]
+  total: number
+  temMais: boolean
+}
+
 export interface FormularioConta {
   nome: string
   tipo: 'pagar' | 'receber'
@@ -47,12 +58,12 @@ export function useContas() {
 
   const sucesso = (titulo: string, descricao?: string) => toast.add({ title: titulo, description: descricao, color: 'success' })
 
-  async function listar(filtros: FiltrosConta = {}) {
+  async function listar(filtros: FiltrosConta = {}, paginacao?: Paginacao) {
     try {
       const query = Object.fromEntries(
         Object.entries(filtros).filter(([, v]) => v != null && v !== '')
       )
-      return await contaService.listar(query)
+      return await contaService.listar(query, paginacao)
     } catch (err) { tratarErro(err, 'Erro ao carregar contas') }
   }
 

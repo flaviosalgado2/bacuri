@@ -1,9 +1,9 @@
-import type { Conta, FiltrosConta, FormularioConta } from '~/composables/useContas'
+import type { Conta, FiltrosConta, FormularioConta, Paginacao, ResultadoListagemContas } from '~/composables/useContas'
 
 export function createContaService(fetch: typeof $fetch = $fetch) {
   return {
-    listar: (filtros: FiltrosConta = {}) =>
-      fetch<Conta[]>('/api/contas', { query: filtros }),
+    listar: (filtros: FiltrosConta = {}, paginacao?: Paginacao) =>
+      fetch<ResultadoListagemContas>('/api/contas', { query: { ...filtros, ...paginacao } }),
 
     buscar: (id: number) =>
       fetch<Conta>(`/api/contas/${id}`),

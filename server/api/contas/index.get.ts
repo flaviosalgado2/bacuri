@@ -5,7 +5,9 @@ const query = z.object({
   tipo: z.enum(['pagar', 'receber']).optional(),
   status: z.enum(['pendente', 'pago']).optional(),
   de: z.string().datetime().optional(),
-  ate: z.string().datetime().optional()
+  ate: z.string().datetime().optional(),
+  pagina: z.coerce.number().int().min(1).default(1),
+  limite: z.coerce.number().int().min(1).max(100).default(20)
 })
 
 export default defineEventHandler(async (event) => {
@@ -23,5 +25,5 @@ export default defineEventHandler(async (event) => {
     filtros.usuarioId = sessao.user.id
   }
 
-  return listarContas(filtros)
+  return listarContas(filtros, { pagina: q.pagina, limite: q.limite })
 })

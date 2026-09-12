@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, asc } from 'drizzle-orm'
+import { and, eq, gte, lte, asc, count } from 'drizzle-orm'
 import { contas, type Conta, type NovaConta } from '../db/schema'
 
 export type FiltrosContaService = {
@@ -7,6 +7,11 @@ export type FiltrosContaService = {
   status?: 'pendente' | 'pago'
   de?: Date
   ate?: Date
+}
+
+export type Paginacao = {
+  pagina: number
+  limite: number
 }
 
 function montarFiltros(filtros: FiltrosContaService) {
@@ -21,9 +26,27 @@ function montarFiltros(filtros: FiltrosContaService) {
   return condicoes.length ? and(...condicoes) : undefined
 }
 
-export async function listarContas(filtros: FiltrosContaService = {}): Promise<Conta[]> {
+export async function listarContas(filtros: FiltrosContaService = {}, paginacao?: Paginacao): Promise<{ contas: Conta[]; total: number; temMais: boolean }> {
   const banco = usarBanco()
-  return banco.select().from(contas).where(montarFiltros(filtros)).orderBy(asc(contas.vencimento))
+  const where = montarFiltros(filtros)
+
+  const [{ value: total }] = await banco.select({ value: count() }).from(contas).where(where)
+
+  let query = banco.select().from(contas).where(where).orderBy(asc(contas.vencimento))
+
+  if (paginacao) {
+    const offset = (paginacao.pagina - 1) * paginacao.limite
+    query = query.limit(paginacao.limite + 1).offset(offset)
+  }
+
+  const resultado = await query
+  const temMais = paginacao ? resultado.length > paginacao.limite : false
+
+  return {
+    contas: paginacao ? resultado.slice(0, paginacao.limite) : resultado,
+    total,
+    temMais
+  }
 }
 
 export async function buscarConta(id: number): Promise<Conta | undefined> {
