@@ -6,9 +6,22 @@ const emit = defineEmits<{ (e: 'atualizar'): void }>()
 
 const { mudarStatus, excluir } = useContas()
 
+const rota = useRoute()
+const destaqueId = computed(() => Number(rota.query.destaque))
+
 const formatarValor = (v: string) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v))
 const formatarData = (d: string) => new Date(d).toLocaleDateString('pt-BR')
 const atrasada = (c: Conta) => new Date(c.vencimento) < new Date().setHours(0, 0, 0, 0)
+
+const classeLinha = (c: Conta) => {
+  const classes = ['border-b', 'border-(--ui-border)']
+  if (destaqueId.value === c.id) {
+    classes.push('bg-(--ui-primary)/10', 'ring-1', 'ring-(--ui-primary)', 'ring-inset')
+  } else {
+    classes.push('hover:bg-(--ui-bg-elevated)/50')
+  }
+  return classes
+}
 
 const modalAberto = ref(false)
 const modalTitulo = ref('')
@@ -76,7 +89,7 @@ async function remover(c: Conta) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="c in contas" :key="c.id" class="border-b border-(--ui-border) hover:bg-(--ui-bg-elevated)/50">
+        <tr v-for="c in contas" :key="c.id" :class="classeLinha(c)">
           <td class="py-3 px-4">
             <p class="font-medium">{{ c.nome }}</p>
             <p v-if="c.observacoes" class="text-xs text-(--ui-text-muted) truncate max-w-[200px]">{{ c.observacoes }}</p>

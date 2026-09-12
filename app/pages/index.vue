@@ -81,12 +81,14 @@ const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
             <p>Nada para os próximos 7 dias</p>
           </div>
           <ul v-else class="space-y-3">
-            <li v-for="c in proximas" :key="c.id" class="flex justify-between p-3 rounded-lg bg-(--ui-bg-muted)">
-              <div>
-                <p class="font-medium text-sm">{{ c.nome }}</p>
-                <p class="text-xs text-(--ui-text-muted)">Vence em {{ data(c.vencimento) }}</p>
-              </div>
-              <p class="font-semibold text-sm">{{ moeda(Number(c.valor)) }}</p>
+            <li v-for="c in proximas" :key="c.id">
+              <ULink :to="`/contas/${c.tipo}?destaque=${c.id}`" class="flex justify-between p-3 rounded-lg bg-(--ui-bg-muted) hover:bg-(--ui-bg-elevated)/50 transition-colors">
+                <div>
+                  <p class="font-medium text-sm">{{ c.nome }}</p>
+                  <p class="text-xs text-(--ui-text-muted)">Vence em {{ data(c.vencimento) }}</p>
+                </div>
+                <p class="font-semibold text-sm">{{ moeda(Number(c.valor)) }}</p>
+              </ULink>
             </li>
           </ul>
         </UCard>
