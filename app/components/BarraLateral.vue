@@ -33,15 +33,13 @@ const escuro = computed(() => modoCor.value === 'dark')
 <template>
   <USidebar variant="inset" class="h-full">
     <template #header>
-      <div class="flex items-center gap-3 px-2">
-        <div class="w-8 h-8 rounded-lg bg-(--ui-primary) flex items-center justify-center">
-          <UIcon name="i-lucide-wallet" class="w-5 h-5 text-white" />
-        </div>
+      <NuxtLink to="/" class="flex items-center gap-3 px-2">
+        <LogoBacuri :tamanho="36" />
         <div>
           <h2 class="font-bold text-lg">Bacuri</h2>
           <p class="text-xs text-(--ui-text-muted)">Finanças</p>
         </div>
-      </div>
+      </NuxtLink>
     </template>
 
     <UNavigationMenu :items="itens" orientation="vertical" />
