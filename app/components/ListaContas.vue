@@ -8,7 +8,7 @@ const { mudarStatus, excluir } = useContas()
 
 const formatarValor = (v: string) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v))
 const formatarData = (d: string) => new Date(d).toLocaleDateString('pt-BR')
-const atrasada = (c: Conta) => c.status === 'pendente' && new Date(c.vencimento) < new Date().setHours(0, 0, 0, 0)
+const atrasada = (c: Conta) => new Date(c.vencimento) < new Date().setHours(0, 0, 0, 0)
 
 const modalAberto = ref(false)
 const modalTitulo = ref('')

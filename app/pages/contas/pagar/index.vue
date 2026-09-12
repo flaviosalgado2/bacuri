@@ -4,7 +4,7 @@ useHead({ title: 'A Pagar - Bacuri' })
 
 const { listar } = useContas()
 const filtros = reactive({ tipo: 'pagar' as const, status: undefined as 'pendente' | 'pago' | undefined, de: undefined as string | undefined, ate: undefined as string | undefined })
-const { data: contas, pending, refresh } = await useLazyAsyncData(() => listar(filtros), { watch: [filtros] })
+const { data: contas, pending, refresh } = await useLazyAsyncData('contas-pagar', () => listar(filtros), { watch: [filtros] })
 </script>
 
 <template>

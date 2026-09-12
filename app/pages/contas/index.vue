@@ -13,7 +13,7 @@ const filtros = reactive({
   ate: rota.query.ate as string | undefined
 })
 
-const { data: contas, pending, refresh } = await useLazyAsyncData(() => listar(filtros), { watch: [filtros] })
+const { data: contas, pending, refresh } = await useLazyAsyncData('contas', () => listar(filtros), { watch: [filtros] })
 
 function aplicar() {
   router.push({ query: { ...(filtros.tipo && { tipo: filtros.tipo }), ...(filtros.status && { status: filtros.status }), ...(filtros.de && { de: filtros.de }), ...(filtros.ate && { ate: filtros.ate }) } })
