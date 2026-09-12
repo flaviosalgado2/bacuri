@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { listarContas } from '../../services/contaService'
 
 const query = z.object({
   tipo: z.enum(['pagar', 'receber']).optional(),

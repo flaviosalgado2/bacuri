@@ -45,7 +45,6 @@ export async function atualizarUsuario(id: number, dados: Partial<{ nome: string
     valores.senhaHash = await hashPassword(dados.senha)
   }
 
-  // Remove campos undefined para não sobrescrever com null
   Object.keys(valores).forEach((chave) => {
     if (valores[chave as keyof typeof valores] === undefined) {
       delete valores[chave as keyof typeof valores]
@@ -63,12 +62,4 @@ export async function desativarUsuario(id: number): Promise<Usuario> {
 export function usuarioSemSenha(usuario: Usuario) {
   const { senhaHash, ...seguro } = usuario
   return seguro
-}
-
-export async function garantirRoot(event: any) {
-  const sessao = await requireUserSession(event)
-  if (sessao.user.perfil !== 'root') {
-    throw createError({ statusCode: 403, statusMessage: 'Apenas administradores podem executar esta ação' })
-  }
-  return sessao
 }

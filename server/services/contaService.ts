@@ -1,7 +1,7 @@
 import { and, eq, gte, lte, asc } from 'drizzle-orm'
 import { contas, type Conta, type NovaConta } from '../db/schema'
 
-export type Filtros = {
+export type FiltrosContaService = {
   usuarioId?: number
   tipo?: 'pagar' | 'receber'
   status?: 'pendente' | 'pago'
@@ -9,7 +9,7 @@ export type Filtros = {
   ate?: Date
 }
 
-function montarFiltros(filtros: Filtros) {
+function montarFiltros(filtros: FiltrosContaService) {
   const condicoes: any[] = []
 
   if (filtros.usuarioId) condicoes.push(eq(contas.usuarioId, filtros.usuarioId))
@@ -21,7 +21,7 @@ function montarFiltros(filtros: Filtros) {
   return condicoes.length ? and(...condicoes) : undefined
 }
 
-export async function listarContas(filtros: Filtros = {}): Promise<Conta[]> {
+export async function listarContas(filtros: FiltrosContaService = {}): Promise<Conta[]> {
   const banco = usarBanco()
   return banco.select().from(contas).where(montarFiltros(filtros)).orderBy(asc(contas.vencimento))
 }
@@ -65,4 +65,3 @@ export async function verificarAcesso(event: any, id: number) {
 
   return conta
 }
-

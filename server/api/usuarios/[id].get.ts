@@ -1,3 +1,6 @@
+import { garantirRoot } from '../../services/autenticacaoService'
+import { buscarUsuarioPorId, usuarioSemSenha } from '../../services/usuarioService'
+
 export default defineEventHandler(async (event) => {
   await garantirRoot(event)
   const id = Number(getRouterParam(event, 'id'))

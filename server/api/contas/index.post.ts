@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { criarConta } from '../../services/contaService'
 
 const schema = z.object({
   nome: z.string().min(1).max(255),

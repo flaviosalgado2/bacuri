@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { alternarStatus, verificarAcesso } from '../../../services/contaService'
 
 const schema = z.object({ status: z.enum(['pendente', 'pago']) })
 

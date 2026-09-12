@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
 import { usuarios } from '../db/schema'
 import { usarBanco } from '../utils/banco'
+import { criarUsuario } from '../services/usuarioService'
 
 export default defineNitroPlugin(async () => {
   const config = useRuntimeConfig()

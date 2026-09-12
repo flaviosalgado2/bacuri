@@ -1,3 +1,5 @@
+import { excluirConta, verificarAcesso } from '../../services/contaService'
+
 export default defineEventHandler(async (event) => {
   const id = Number(getRouterParam(event, 'id'))
   await verificarAcesso(event, id)

@@ -1,3 +1,5 @@
+import { autenticacaoService } from '~/services/autenticacaoService'
+
 export interface Usuario {
   id: number
   nome: string
@@ -31,7 +33,7 @@ export function useAutenticacao() {
 
   async function entrar(credenciais: Credenciais) {
     try {
-      await $fetch('/api/autenticacao/entrar', { method: 'POST', body: credenciais })
+      await autenticacaoService.entrar(credenciais)
       await atualizarSessao()
       toast.add({ title: 'Bem-vindo!', color: 'success' })
       router.push('/')
@@ -43,7 +45,7 @@ export function useAutenticacao() {
 
   async function cadastrar(dados: DadosCadastro) {
     try {
-      await $fetch('/api/autenticacao/cadastro', { method: 'POST', body: dados })
+      await autenticacaoService.cadastrar(dados)
       await atualizarSessao()
       toast.add({ title: 'Conta criada', color: 'success' })
       router.push('/')
@@ -55,7 +57,7 @@ export function useAutenticacao() {
 
   async function sair() {
     try {
-      await $fetch('/api/autenticacao/sair', { method: 'POST' })
+      await autenticacaoService.sair()
       await atualizarSessao()
       router.push('/entrar')
     } catch (err) {

@@ -1,3 +1,5 @@
+import { createContaService } from '~/services/contaService'
+
 export interface Conta {
   id: number
   usuarioId: number
@@ -32,6 +34,7 @@ export interface FormularioConta {
 export function useContas() {
   const toast = useToast()
   const apiFetch = import.meta.server ? useRequestFetch() : $fetch
+  const contaService = createContaService(apiFetch)
 
   const tratarErro = (err: any, padrao: string) => {
     toast.add({
@@ -49,22 +52,19 @@ export function useContas() {
       const query = Object.fromEntries(
         Object.entries(filtros).filter(([, v]) => v != null && v !== '')
       )
-      return await apiFetch<Conta[]>('/api/contas', { query })
+      return await contaService.listar(query)
     } catch (err) { tratarErro(err, 'Erro ao carregar contas') }
   }
 
   async function buscar(id: number) {
     try {
-      return await apiFetch<Conta>(`/api/contas/${id}`)
+      return await contaService.buscar(id)
     } catch (err) { tratarErro(err, 'Erro ao carregar conta') }
   }
 
   async function criar(dados: FormularioConta) {
     try {
-      const conta = await $fetch<Conta>('/api/contas', {
-        method: 'POST',
-        body: { ...dados, descontoAte: dados.descontoAte || null, observacoes: dados.observacoes || null }
-      })
+      const conta = await contaService.criar(dados)
       sucesso('Conta cadastrada', `"${conta.nome}" foi salva com sucesso.`)
       return conta
     } catch (err) { tratarErro(err, 'Erro ao cadastrar conta') }
@@ -72,10 +72,7 @@ export function useContas() {
 
   async function atualizar(id: number, dados: Partial<FormularioConta>) {
     try {
-      const conta = await $fetch<Conta>(`/api/contas/${id}`, {
-        method: 'PUT',
-        body: { ...dados, descontoAte: dados.descontoAte || null, observacoes: dados.observacoes || null }
-      })
+      const conta = await contaService.atualizar(id, dados)
       sucesso('Conta atualizada', `"${conta.nome}" foi editada com sucesso.`)
       return conta
     } catch (err) { tratarErro(err, 'Erro ao atualizar conta') }
@@ -83,14 +80,14 @@ export function useContas() {
 
   async function excluir(id: number) {
     try {
-      await $fetch(`/api/contas/${id}`, { method: 'DELETE' })
+      await contaService.excluir(id)
       sucesso('Conta excluída', 'A conta foi removida com sucesso.')
     } catch (err) { tratarErro(err, 'Erro ao excluir conta') }
   }
 
   async function mudarStatus(id: number, status: 'pendente' | 'pago') {
     try {
-      const conta = await $fetch<Conta>(`/api/contas/${id}/status`, { method: 'PATCH', body: { status } })
+      const conta = await contaService.mudarStatus(id, status)
       sucesso(
         status === 'pago' ? 'Conta paga' : 'Conta pendente',
         status === 'pago' ? `"${conta.nome}" foi marcada como paga.` : `"${conta.nome}" foi marcada como pendente.`

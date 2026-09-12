@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { garantirRoot } from '../../services/autenticacaoService'
+import { buscarUsuarioPorEmail, criarUsuario, usuarioSemSenha } from '../../services/usuarioService'
 
 const schema = z.object({
   nome: z.string().min(2).max(255),
