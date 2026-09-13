@@ -51,6 +51,6 @@ describe('Controle de acesso', async () => {
   it('root acessa todas as contas', async () => {
     const cookieRoot = await criarSessao('root@teste.com', 'root123456')
     const lista = await $fetch('/api/contas', { headers: { cookie: cookieRoot } })
-    expect(lista.length).toBeGreaterThan(0)
+    expect(lista.contas.length).toBeGreaterThan(0)
   })
 })

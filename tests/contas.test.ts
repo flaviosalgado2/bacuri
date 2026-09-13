@@ -43,8 +43,8 @@ describe('Contas', async () => {
     expect(conta.status).toBe('pendente')
 
     const lista = await $fetch('/api/contas', { headers: { cookie } })
-    expect(lista).toHaveLength(1)
-    expect(lista[0].nome).toBe('Aluguel')
+    expect(lista.contas).toHaveLength(1)
+    expect(lista.contas[0].nome).toBe('Aluguel')
   })
 
   it('atualiza status da conta', async () => {
@@ -74,6 +74,6 @@ describe('Contas', async () => {
 
     await $fetch(`/api/contas/${conta.id}`, { method: 'DELETE', headers: { cookie } })
     const lista = await $fetch('/api/contas', { headers: { cookie } })
-    expect(lista.some((c: any) => c.id === conta.id)).toBe(false)
+    expect(lista.contas.some((c: any) => c.id === conta.id)).toBe(false)
   })
 })

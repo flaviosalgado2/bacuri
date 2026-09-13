@@ -6,6 +6,7 @@ export async function limparBanco() {
   const pool = new Pool({ connectionString: urlTeste })
   await pool.query(`
     DROP TABLE IF EXISTS contas CASCADE;
+    DROP TABLE IF EXISTS configuracoes CASCADE;
     DROP TABLE IF EXISTS usuarios CASCADE;
     DROP TYPE IF EXISTS perfil CASCADE;
     DROP TYPE IF EXISTS status CASCADE;

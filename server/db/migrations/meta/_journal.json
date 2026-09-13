@@ -15,6 +15,20 @@
       "when": 1788956225267,
       "tag": "0001_flippant_excalibur",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789307729472,
+      "tag": "0002_smart_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789309021878,
+      "tag": "0003_numerous_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

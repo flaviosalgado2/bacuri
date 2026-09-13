@@ -28,6 +28,24 @@ export const contas = pgTable('contas', {
   atualizadoEm: timestamp('atualizado_em').notNull().defaultNow()
 })
 
+export const configuracoes = pgTable('configuracoes', {
+  id: serial('id').primaryKey(),
+  usuarioId: integer('usuario_id').notNull().references(() => usuarios.id, { onDelete: 'cascade' }).unique(),
+  outlookAtivado: boolean('outlook_ativado').notNull().default(false),
+  outlookClientId: varchar('outlook_client_id', { length: 512 }),
+  outlookClientSecret: varchar('outlook_client_secret', { length: 512 }),
+  outlookTenantId: varchar('outlook_tenant_id', { length: 255 }),
+  outlookRedirectUri: varchar('outlook_redirect_uri', { length: 512 }),
+  outlookCalendarioId: varchar('outlook_calendario_id', { length: 512 }),
+  outlookContaEmail: varchar('outlook_conta_email', { length: 255 }),
+  outlookLembreteDias: integer('outlook_lembrete_dias').notNull().default(1),
+  outlookToken: text('outlook_token'),
+  outlookRefreshToken: text('outlook_refresh_token'),
+  criadoEm: timestamp('criado_em').notNull().defaultNow(),
+  atualizadoEm: timestamp('atualizado_em').notNull().defaultNow()
+})
+
 export type Usuario = typeof usuarios.$inferSelect
 export type NovaConta = typeof contas.$inferInsert
 export type Conta = typeof contas.$inferSelect
+export type Configuracao = typeof configuracoes.$inferSelect
