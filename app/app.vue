@@ -3,6 +3,7 @@
     <NuxtRouteAnnouncer />
     <NuxtLoadingIndicator />
     <UToaster />
+    <PwaInstallPrompt />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

@@ -20,9 +20,14 @@ services:
       # Código montado para refletir alterações sem rebuild
       - .:/app
 
+    # Permite alternar entre dev (padrão) e preview de produção/PWA via variável.
+    # Exemplo para testar PWA:
+    #   NUXT_COMMAND="npm run preview:build" NODE_ENV=production docker compose up
+    command: ${NUXT_COMMAND:-npm run dev -- --host 0.0.0.0}
+
     environment:
-      # development porque o Dockerfile.local roda npm run dev
-      NODE_ENV: development
+      # development por padrão; use NODE_ENV=production para preview de PWA
+      NODE_ENV: ${NODE_ENV:-development}
       APP_ENV: local
       NUXT_PUBLIC_APP_ENV: local
       HOST: 0.0.0.0

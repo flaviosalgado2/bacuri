@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <radialGradient id="fruta-corpo" cx="35%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#FFEB3B" />
+      <stop offset="25%" stop-color="#FFC107" />
+      <stop offset="55%" stop-color="#FF9800" />
+      <stop offset="85%" stop-color="#F57C00" />
+      <stop offset="100%" stop-color="#E65100" />
+    </radialGradient>
+    <radialGradient id="fruta-sombra" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="transparent" />
+      <stop offset="100%" stop-color="#BF360C" stop-opacity="0.35" />
+    </radialGradient>
+    <linearGradient id="folha" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7CFC00" />
+      <stop offset="50%" stop-color="#64DD17" />
+      <stop offset="100%" stop-color="#2E7D32" />
+    </linearGradient>
+    <radialGradient id="brilho" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="white" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Sombra projetada -->
+  <ellipse cx="100" cy="168" rx="55" ry="10" fill="#000" opacity="0.15" />
+
+  <!-- Folhas -->
+  <path d="M100 40 C75 18, 48 14, 40 35 C55 45, 80 43, 100 40" fill="url(#folha)" stroke="#1B5E20" stroke-width="0.5" />
+  <path d="M100 40 C125 18, 154 14, 162 35 C147 45, 120 43, 100 40" fill="url(#folha)" stroke="#1B5E20" stroke-width="0.5" />
+  <path d="M100 40 C95 12, 92 3, 100 0 C108 3, 105 12, 100 40" fill="url(#folha)" />
+
+  <!-- Caule -->
+  <path d="M94 38 Q100 28 106 38 L104 50 Q100 54 96 50 Z" fill="#5D4037" />
+
+  <!-- Fruta -->
+  <circle cx="100" cy="108" r="68" fill="url(#fruta-corpo)" />
+  <circle cx="100" cy="108" r="68" fill="url(#fruta-sombra)" />
+
+  <!-- Brilho glossy principal -->
+  <ellipse cx="78" cy="80" rx="24" ry="15" fill="url(#brilho)" transform="rotate(-35 78 80)" />
+
+  <!-- Brilho secundário -->
+  <circle cx="132" cy="58" r="7" fill="white" opacity="0.55" />
+
+  <!-- Pequeno reflexo inferior -->
+  <ellipse cx="120" cy="142" rx="12" ry="6" fill="white" opacity="0.15" transform="rotate(-20 120 142)" />
+</svg>
