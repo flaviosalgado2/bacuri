@@ -15,6 +15,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./certbot/www:/var/www/certbot:ro
 
     depends_on:
       nuxt:
@@ -94,6 +95,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  # --------------------------------------------------
+  # Certbot: emissão e renovação automática de certificados Let's Encrypt
+  # --------------------------------------------------
+  certbot:
+    image: certbot/certbot:v2.11.0
+    container_name: certbot-prod
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path /var/www/certbot --non-interactive --quiet; sleep 12h; done'"
+
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+    environment:
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${EMAIL}
 
 volumes:
   postgres_prod_data:

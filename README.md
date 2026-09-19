@@ -234,13 +234,30 @@ Edite o `.env.prod` com valores seguros (especialmente `NUXT_SESSION_PASSWORD`, 
 
 #### 2. Prepare o certificado SSL
 
-Para testes locais, gere um certificado autoassinado:
+**Opção A — Testes locais (certificado autoassinado):**
 
 ```bash
 ./scripts/generate-ssl.sh
 ```
 
-> Em produção real, substitua os arquivos `nginx/ssl/cert.pem` e `nginx/ssl/key.pem` pelos certificados válidos do seu domínio.
+**Opção B — Produção real (Let's Encrypt automático):**
+
+Configure o domínio e e-mail no `.env.prod`:
+
+```env
+DOMAIN=seu-dominio.com.br
+EMAIL=seu-email@exemplo.com.br
+```
+
+Certifique-se de que o domínio aponte para o servidor e a porta 80 está liberada. Depois emita o certificado:
+
+```bash
+./scripts/init-ssl.sh
+```
+
+A renovação é automática pelo container `certbot-prod` (verifica a cada 12 horas).
+
+> Se preferir usar certificado comprado, substitua manualmente os arquivos `nginx/ssl/cert.pem` e `nginx/ssl/key.pem`.
 
 #### 3. Inicie os serviços
 
@@ -377,11 +394,16 @@ bacuri/
 ├── Dockerfile.local        # Imagem para uso pessoal local
 ├── Dockerfile.prod         # Imagem otimizada para produção
 ├── postgres-init.sql       # Cria os bancos nuxt_local e nuxt_dev no PostgreSQL
+├── certbot/                # Certificados e webroot do Let's Encrypt
+│   ├── conf/               # Certificados gerados pelo Certbot
+│   └── www/                # Webroot para desafios ACME
 ├── nginx/                  # Configuração do Nginx (HTTPS + load balancer)
 │   ├── nginx.conf          # Configuração principal
-│   └── ssl/                # Certificados SSL (você coloca os reais aqui)
+│   └── ssl/                # Certificados SSL (autoassinados ou reais)
 └── scripts/                # Scripts auxiliares
-    └── generate-ssl.sh     # Gera certificado SSL autoassinado para testes
+    ├── generate-ssl.sh     # Gera certificado SSL autoassinado para testes
+    ├── init-ssl.sh         # Emite certificado Let's Encrypt
+    └── renew-ssl.sh        # Renova certificado Let's Encrypt manualmente
 ├── drizzle.config.ts       # Configuração do Drizzle Kit
 ├── nuxt.config.ts          # Configuração do Nuxt
 ├── vitest.config.ts        # Configuração dos testes
@@ -415,6 +437,8 @@ npm run test:watch
 | `POSTGRES_DB` | Nome do banco de dados usado pelo `docker-compose.prod.yml` | Sim (produção) | `.env.prod` |
 | `POSTGRES_USER` | Usuário do PostgreSQL usado pelo `docker-compose.prod.yml` | Sim (produção) | `.env.prod` |
 | `POSTGRES_PASSWORD` | Senha do PostgreSQL usada pelo `docker-compose.prod.yml` | Sim (produção) | `.env.prod` |
+| `DOMAIN` | Domínio para emissão do certificado Let's Encrypt | Sim (produção com Certbot) | `.env.prod` |
+| `EMAIL` | E-mail da conta Let's Encrypt | Sim (produção com Certbot) | `.env.prod` |
 | `APP_ENV` | Identificação do ambiente (`local`, `dev`, `prod`) | Definido nos composes | - |
 
 ---
