@@ -41,15 +41,15 @@ async function enviar() {
 
     <UForm :schema="schema" :state="estado" class="space-y-4" @submit="enviar">
       <UFormField label="Nome" name="nome">
-        <UInput v-model="estado.nome" placeholder="Seu nome" icon="i-lucide-user" class="w-full" />
+        <UInput v-model="estado.nome" name="nome" autocomplete="name" placeholder="Seu nome" icon="i-lucide-user" class="w-full" />
       </UFormField>
 
       <UFormField label="E-mail" name="email">
-        <UInput v-model="estado.email" type="email" placeholder="seu@email.com" icon="i-lucide-mail" class="w-full" />
+        <UInput v-model="estado.email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" icon="i-lucide-mail" class="w-full" />
       </UFormField>
 
       <UFormField label="Senha" name="senha">
-        <UInput v-model="estado.senha" :type="mostrarSenha ? 'text' : 'password'" placeholder="Mínimo 8 caracteres" icon="i-lucide-lock" class="w-full">
+        <UInput v-model="estado.senha" name="senha" :type="mostrarSenha ? 'text' : 'password'" autocomplete="new-password" placeholder="Mínimo 8 caracteres" icon="i-lucide-lock" class="w-full">
           <template #trailing>
             <UButton color="neutral" variant="link" size="sm" :icon="mostrarSenha ? 'i-lucide-eye-off' : 'i-lucide-eye'" @click="mostrarSenha = !mostrarSenha" />
           </template>
@@ -57,7 +57,7 @@ async function enviar() {
       </UFormField>
 
       <UFormField label="Confirmar senha" name="confirmar">
-        <UInput v-model="estado.confirmar" :type="mostrarSenha ? 'text' : 'password'" placeholder="Repita a senha" icon="i-lucide-lock" class="w-full" />
+        <UInput v-model="estado.confirmar" name="confirmar" :type="mostrarSenha ? 'text' : 'password'" autocomplete="new-password" placeholder="Repita a senha" icon="i-lucide-lock" class="w-full" />
       </UFormField>
 
       <UButton type="submit" color="primary" block size="lg" :loading="carregando">Cadastrar</UButton>

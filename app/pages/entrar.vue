@@ -35,11 +35,11 @@ async function enviar() {
 
     <UForm :schema="schema" :state="estado" class="space-y-4" @submit="enviar">
       <UFormField label="E-mail" name="email">
-        <UInput v-model="estado.email" type="email" placeholder="seu@email.com" icon="i-lucide-mail" class="w-full" />
+        <UInput v-model="estado.email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" icon="i-lucide-mail" class="w-full" />
       </UFormField>
 
       <UFormField label="Senha" name="senha">
-        <UInput v-model="estado.senha" :type="mostrarSenha ? 'text' : 'password'" placeholder="Digite sua senha" icon="i-lucide-lock" class="w-full">
+        <UInput v-model="estado.senha" name="senha" :type="mostrarSenha ? 'text' : 'password'" autocomplete="current-password" placeholder="Digite sua senha" icon="i-lucide-lock" class="w-full">
           <template #trailing>
             <UButton color="neutral" variant="link" size="sm" :icon="mostrarSenha ? 'i-lucide-eye-off' : 'i-lucide-eye'" @click="mostrarSenha = !mostrarSenha" />
           </template>
