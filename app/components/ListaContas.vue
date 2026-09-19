@@ -80,7 +80,6 @@ async function remover(c: Conta) {
       <thead>
         <tr class="border-b border-(--ui-border)">
           <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Nome</th>
-          <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Tipo</th>
           <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Vencimento</th>
           <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Desconto</th>
           <th class="text-right py-3 px-4 font-medium text-(--ui-text-muted)">Valor</th>
@@ -93,11 +92,6 @@ async function remover(c: Conta) {
           <td class="py-3 px-4">
             <p class="font-medium">{{ c.nome }}</p>
             <p v-if="c.observacoes" class="text-xs text-(--ui-text-muted) truncate max-w-[200px]">{{ c.observacoes }}</p>
-          </td>
-          <td class="py-3 px-4">
-            <UBadge :color="c.tipo === 'pagar' ? 'error' : 'success'" size="xs" variant="subtle">
-              {{ c.tipo === 'pagar' ? 'Pagar' : 'Receber' }}
-            </UBadge>
           </td>
           <td class="py-3 px-4" :class="atrasada(c) ? 'text-red-500 font-medium' : ''">{{ formatarData(c.vencimento) }}</td>
           <td class="py-3 px-4">{{ c.descontoAte ? formatarData(c.descontoAte) : '-' }}</td>

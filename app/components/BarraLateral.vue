@@ -8,8 +8,7 @@ const root = computed(() => usuario.value?.perfil === 'root')
 const itens = ref([
   { label: 'Início', icon: 'i-lucide-layout-dashboard', to: '/' },
   { label: 'Contas a pagar', icon: 'i-lucide-receipt', to: '/contas/pagar' },
-  { label: 'Contas a receber', icon: 'i-lucide-hand-coins', to: '/contas/receber' },
-  { label: 'Todas as contas', icon: 'i-lucide-list-checks', to: '/contas' }
+  { label: 'Contas a receber', icon: 'i-lucide-hand-coins', to: '/contas/receber' }
 ])
 
 watchEffect(() => {
@@ -17,7 +16,6 @@ watchEffect(() => {
     { label: 'Início', icon: 'i-lucide-layout-dashboard', to: '/' },
     { label: 'Contas a pagar', icon: 'i-lucide-receipt', to: '/contas/pagar' },
     { label: 'Contas a receber', icon: 'i-lucide-hand-coins', to: '/contas/receber' },
-    { label: 'Todas as contas', icon: 'i-lucide-list-checks', to: '/contas' },
     { label: 'Configurações', icon: 'i-lucide-settings', to: '/configuracoes' }
   ]
 
