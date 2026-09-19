@@ -58,7 +58,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
               <p class="text-sm text-(--ui-text-muted)">Saldo</p>
               <p class="text-2xl font-bold" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'">{{ moeda(saldo) }}</p>
             </div>
-            <UIcon name="i-lucide-scale" class="w-6 h-6" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'" />
+            <UIcon name="i-lucide-wallet" class="w-6 h-6" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'" />
           </div>
         </UCard>
         <UCard>
