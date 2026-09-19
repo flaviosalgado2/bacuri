@@ -3,6 +3,7 @@ import { pgTable, serial, varchar, text, timestamp, date, integer, decimal, bool
 export const perfilEnum = pgEnum('perfil', ['usuario', 'root'])
 export const tipoEnum = pgEnum('tipo', ['pagar', 'receber'])
 export const statusEnum = pgEnum('status', ['pendente', 'pago'])
+export const temaEnum = pgEnum('tema', ['system', 'light', 'dark'])
 
 export const usuarios = pgTable('usuarios', {
   id: serial('id').primaryKey(),
@@ -31,6 +32,7 @@ export const contas = pgTable('contas', {
 export const configuracoes = pgTable('configuracoes', {
   id: serial('id').primaryKey(),
   usuarioId: integer('usuario_id').notNull().references(() => usuarios.id, { onDelete: 'cascade' }).unique(),
+  tema: temaEnum('tema').notNull().default('system'),
   outlookAtivado: boolean('outlook_ativado').notNull().default(false),
   outlookClientId: varchar('outlook_client_id', { length: 512 }),
   outlookClientSecret: varchar('outlook_client_secret', { length: 512 }),

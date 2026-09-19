@@ -1,0 +1,15 @@
+{
+  "name": "Bacuri",
+  "short_name": "Bacuri",
+  "description": "Gestão simplificada de contas a pagar e receber",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF9800",
+  "lang": "pt-BR",
+  "scope": "/",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/logo-bacuri.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

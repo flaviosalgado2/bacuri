@@ -50,6 +50,13 @@
       "when": 1789787681872,
       "tag": "0006_strange_the_professor",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789837063949,
+      "tag": "0007_lucky_tenebrous",
+      "breakpoints": true
     }
   ]
 }

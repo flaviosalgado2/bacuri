@@ -8,6 +8,7 @@ const { data: configuracao, pending, refresh } = await useLazyAsyncData('configu
   default: () => ({
     id: 0,
     usuarioId: 0,
+    tema: 'system' as const,
     outlookAtivado: false,
     outlookClientId: null,
     outlookTenantId: null,
@@ -21,6 +22,7 @@ const { data: configuracao, pending, refresh } = await useLazyAsyncData('configu
 })
 
 const formulario = reactive({
+  tema: 'system' as const,
   outlookAtivado: false,
   outlookClientId: '',
   outlookClientSecret: '',
@@ -40,6 +42,7 @@ const salvando = ref(false)
 
 watch(() => configuracao.value, (nova) => {
   if (!nova) return
+  formulario.tema = nova.tema
   formulario.outlookAtivado = nova.outlookAtivado
   formulario.outlookClientId = nova.outlookClientId || ''
   formulario.outlookTenantId = nova.outlookTenantId || ''
@@ -100,10 +103,13 @@ async function testar() {
   }
 }
 
+const colorMode = useColorMode()
+
 async function salvar() {
   salvando.value = true
   try {
     await atualizar({
+      tema: formulario.tema,
       outlookAtivado: formulario.outlookAtivado,
       outlookClientId: formulario.outlookClientId || null,
       outlookClientSecret: formulario.outlookClientSecret || null,
@@ -113,6 +119,13 @@ async function salvar() {
       outlookContaEmail: formulario.outlookContaEmail || null,
       outlookLembreteDias: Number(formulario.outlookLembreteDias)
     })
+
+    if (formulario.tema === 'system') {
+      colorMode.preference = 'system'
+    } else {
+      colorMode.preference = formulario.tema
+    }
+
     await refresh()
   } finally {
     salvando.value = false
@@ -154,11 +167,26 @@ const abas = [
             </button>
           </div>
 
-          <div v-if="abaAtiva === 'geral'" class="py-4 text-(--ui-text-muted)">
-            <p>Outras configurações gerais do sistema serão adicionadas aqui futuramente.</p>
+          <div v-if="abaAtiva === 'geral'" :key="'geral'" class="py-4 space-y-6">
+            <div>
+              <UFormField label="Tema" name="tema">
+                <URadioGroup
+                  v-model="formulario.tema"
+                  :items="[
+                    { label: 'Sistema', value: 'system', description: 'Usa o modo do sistema operacional' },
+                    { label: 'Claro', value: 'light', description: 'Tema claro fixo' },
+                    { label: 'Escuro', value: 'dark', description: 'Tema escuro fixo' }
+                  ]"
+                />
+              </UFormField>
+            </div>
+
+            <UButton color="primary" icon="i-lucide-save" :loading="salvando" @click="salvar">
+              Salvar preferências
+            </UButton>
           </div>
 
-          <div v-else-if="abaAtiva === 'outlook'" class="space-y-6 py-4">
+          <div v-else-if="abaAtiva === 'outlook'" :key="'outlook'" class="space-y-6 py-4">
             <p class="text-sm text-(--ui-text-muted)">
               Configure a integração com o calendário do Outlook para receber lembretes dos vencimentos das suas contas.
             </p>

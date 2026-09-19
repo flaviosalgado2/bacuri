@@ -21,6 +21,7 @@ export async function buscarConfiguracao(usuarioId: number): Promise<Configuraca
 export async function atualizarConfiguracao(
   usuarioId: number,
   dados: Partial<{
+    tema: 'system' | 'light' | 'dark'
     outlookAtivado: boolean
     outlookClientId: string | null
     outlookClientSecret: string | null
@@ -38,6 +39,7 @@ export async function atualizarConfiguracao(
   await buscarConfiguracao(usuarioId)
 
   const valores: Partial<typeof configuracoes.$inferInsert> = {
+    tema: dados.tema,
     outlookAtivado: dados.outlookAtivado,
     outlookClientId: dados.outlookClientId,
     outlookClientSecret: dados.outlookClientSecret,

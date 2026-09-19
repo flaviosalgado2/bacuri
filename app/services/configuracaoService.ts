@@ -1,6 +1,9 @@
+export type Tema = 'system' | 'light' | 'dark'
+
 export interface Configuracao {
   id: number
   usuarioId: number
+  tema: Tema
   outlookAtivado: boolean
   outlookClientId: string | null
   outlookTenantId: string | null
@@ -13,6 +16,7 @@ export interface Configuracao {
 }
 
 export interface DadosConfiguracao {
+  tema?: Tema
   outlookAtivado?: boolean
   outlookClientId?: string | null
   outlookClientSecret?: string | null
