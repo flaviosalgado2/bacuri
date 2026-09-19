@@ -12,6 +12,11 @@ const totalReceber = computed(() => pendentes.value.filter(c => c.tipo === 'rece
 const pagarPendentes = computed(() => pendentes.value.filter(c => c.tipo === 'pagar'))
 const receberPendentes = computed(() => pendentes.value.filter(c => c.tipo === 'receber'))
 const pendentes = computed(() => contas.value.filter(c => c.status === 'pendente'))
+const vencidas = computed(() => {
+  const hoje = new Date()
+  hoje.setHours(0, 0, 0, 0)
+  return pendentes.value.filter(c => paraDataLocal(c.vencimento) < hoje)
+})
 
 function paraDataLocal(d: string) {
   const [ano, mes, dia] = d.split('-').map(Number)
@@ -74,7 +79,16 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
         <UCard>
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm text-(--ui-text-muted)">Quantidade Geral (Pendentes)</p>
+              <p class="text-sm text-(--ui-text-muted)">Quantidade Geral de Contas Vencidas (Pendentes)</p>
+              <p class="text-2xl font-bold text-red-500">{{ vencidas.length }}</p>
+            </div>
+            <UIcon name="i-lucide-calendar-x" class="w-6 h-6 text-red-500" />
+          </div>
+        </UCard>
+        <UCard>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Quantidade Geral Total (Pendentes)</p>
               <p class="text-2xl font-bold">{{ pendentes.length }}</p>
             </div>
             <UIcon name="i-lucide-clock-alert" class="w-6 h-6 text-(--ui-warning)" />
