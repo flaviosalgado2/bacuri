@@ -7,9 +7,10 @@ const { data: resultado, pending } = await useLazyAsyncData('dashboard', () => l
 
 const contas = computed(() => resultado.value?.contas ?? [])
 
-const totalPagar = computed(() => contas.value.filter(c => c.tipo === 'pagar').reduce((a, c) => a + Number(c.valor), 0))
-const totalReceber = computed(() => contas.value.filter(c => c.tipo === 'receber').reduce((a, c) => a + Number(c.valor), 0))
-const saldo = computed(() => totalReceber.value - totalPagar.value)
+const totalPagar = computed(() => pendentes.value.filter(c => c.tipo === 'pagar').reduce((a, c) => a + Number(c.valor), 0))
+const totalReceber = computed(() => pendentes.value.filter(c => c.tipo === 'receber').reduce((a, c) => a + Number(c.valor), 0))
+const pagarPendentes = computed(() => pendentes.value.filter(c => c.tipo === 'pagar'))
+const receberPendentes = computed(() => pendentes.value.filter(c => c.tipo === 'receber'))
 const pendentes = computed(() => contas.value.filter(c => c.status === 'pendente'))
 
 function paraDataLocal(d: string) {
@@ -37,7 +38,16 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
         <UCard>
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm text-(--ui-text-muted)">Total a Pagar</p>
+              <p class="text-sm text-(--ui-text-muted)">Quantidade de Contas a Pagar (Pendentes)</p>
+              <p class="text-2xl font-bold text-red-500">{{ pagarPendentes.length }}</p>
+            </div>
+            <UIcon name="i-lucide-receipt" class="w-6 h-6 text-red-500" />
+          </div>
+        </UCard>
+        <UCard>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Valor Total Contas a Pagar (Pendentes)</p>
               <p class="text-2xl font-bold text-red-500">{{ moeda(totalPagar) }}</p>
             </div>
             <UIcon name="i-lucide-receipt" class="w-6 h-6 text-red-500" />
@@ -46,7 +56,16 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
         <UCard>
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm text-(--ui-text-muted)">Total a Receber</p>
+              <p class="text-sm text-(--ui-text-muted)">Quantidade de Contas a Receber (Pendentes)</p>
+              <p class="text-2xl font-bold text-emerald-500">{{ receberPendentes.length }}</p>
+            </div>
+            <UIcon name="i-lucide-hand-coins" class="w-6 h-6 text-emerald-500" />
+          </div>
+        </UCard>
+        <UCard>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-(--ui-text-muted)">Valor Total Contas a Receber (Pendentes)</p>
               <p class="text-2xl font-bold text-emerald-500">{{ moeda(totalReceber) }}</p>
             </div>
             <UIcon name="i-lucide-hand-coins" class="w-6 h-6 text-emerald-500" />
@@ -55,16 +74,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
         <UCard>
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm text-(--ui-text-muted)">Saldo</p>
-              <p class="text-2xl font-bold" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'">{{ moeda(saldo) }}</p>
-            </div>
-            <UIcon name="i-lucide-wallet" class="w-6 h-6" :class="saldo >= 0 ? 'text-emerald-500' : 'text-red-500'" />
-          </div>
-        </UCard>
-        <UCard>
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm text-(--ui-text-muted)">Pendentes</p>
+              <p class="text-sm text-(--ui-text-muted)">Quantidade Geral (Pendentes)</p>
               <p class="text-2xl font-bold">{{ pendentes.length }}</p>
             </div>
             <UIcon name="i-lucide-clock-alert" class="w-6 h-6 text-(--ui-warning)" />
