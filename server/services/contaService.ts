@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, asc, count } from 'drizzle-orm'
+import { and, eq, gte, lte, desc, count } from 'drizzle-orm'
 import { contas, type Conta, type NovaConta } from '../db/schema'
 
 export type FiltrosContaService = {
@@ -32,7 +32,7 @@ export async function listarContas(filtros: FiltrosContaService = {}, paginacao?
 
   const [{ value: total }] = await banco.select({ value: count() }).from(contas).where(where)
 
-  let query = banco.select().from(contas).where(where).orderBy(asc(contas.vencimento))
+  let query = banco.select().from(contas).where(where).orderBy(desc(contas.vencimento))
 
   if (paginacao) {
     const offset = (paginacao.pagina - 1) * paginacao.limite
