@@ -16,6 +16,10 @@ services:
     env_file:
       - .env
 
+    volumes:
+      # Código montado para refletir alterações sem rebuild
+      - .:/app
+
     environment:
       # development porque o Dockerfile.local roda npm run dev
       NODE_ENV: development

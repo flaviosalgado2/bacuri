@@ -12,13 +12,18 @@ const totalReceber = computed(() => contas.value.filter(c => c.tipo === 'receber
 const saldo = computed(() => totalReceber.value - totalPagar.value)
 const pendentes = computed(() => contas.value.filter(c => c.status === 'pendente'))
 
+function paraDataLocal(d: string) {
+  const [ano, mes, dia] = d.split('-').map(Number)
+  return new Date(ano, mes - 1, dia)
+}
+
 const proximas = computed(() => {
   const limite = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  return pendentes.value.filter(c => new Date(c.vencimento) <= limite).sort((a, b) => +new Date(a.vencimento) - +new Date(b.vencimento)).slice(0, 5)
+  return pendentes.value.filter(c => paraDataLocal(c.vencimento) <= limite).sort((a, b) => +paraDataLocal(a.vencimento) - +paraDataLocal(b.vencimento)).slice(0, 5)
 })
 
 const moeda = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
-const data = (d: string) => new Date(d).toLocaleDateString('pt-BR')
+const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
 </script>
 
 <template>

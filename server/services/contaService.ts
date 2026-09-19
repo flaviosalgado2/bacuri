@@ -5,8 +5,8 @@ export type FiltrosContaService = {
   usuarioId?: number
   tipo?: 'pagar' | 'receber'
   status?: 'pendente' | 'pago'
-  de?: Date
-  ate?: Date
+  de?: string
+  ate?: string
 }
 
 export type Paginacao = {

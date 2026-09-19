@@ -10,8 +10,14 @@ const rota = useRoute()
 const destaqueId = computed(() => Number(rota.query.destaque))
 
 const formatarValor = (v: string) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v))
-const formatarData = (d: string) => new Date(d).toLocaleDateString('pt-BR')
-const atrasada = (c: Conta) => new Date(c.vencimento) < new Date().setHours(0, 0, 0, 0)
+
+function paraDataLocal(d: string) {
+  const [ano, mes, dia] = d.split('-').map(Number)
+  return new Date(ano, mes - 1, dia)
+}
+
+const formatarData = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
+const atrasada = (c: Conta) => paraDataLocal(c.vencimento) < new Date(new Date().setHours(0, 0, 0, 0))
 
 const classeLinha = (c: Conta) => {
   const classes = ['border-b', 'border-(--ui-border)']

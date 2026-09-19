@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp, integer, decimal, boolean, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, serial, varchar, text, timestamp, date, integer, decimal, boolean, pgEnum } from 'drizzle-orm/pg-core'
 
 export const perfilEnum = pgEnum('perfil', ['usuario', 'root'])
 export const tipoEnum = pgEnum('tipo', ['pagar', 'receber'])
@@ -20,8 +20,8 @@ export const contas = pgTable('contas', {
   nome: varchar('nome', { length: 255 }).notNull(),
   tipo: tipoEnum('tipo').notNull(),
   valor: decimal('valor', { precision: 15, scale: 2 }).notNull(),
-  vencimento: timestamp('vencimento', { mode: 'date' }).notNull(),
-  descontoAte: timestamp('desconto_ate', { mode: 'date' }),
+  vencimento: date('vencimento').notNull(),
+  descontoAte: date('desconto_ate'),
   observacoes: text('observacoes'),
   status: statusEnum('status').notNull().default('pendente'),
   criadoEm: timestamp('criado_em').notNull().defaultNow(),

@@ -133,7 +133,7 @@ O projeto possui **3 ambientes** diferentes, cada um com seu arquivo Docker Comp
 
 | Ambiente | Arquivo | Imagem Docker | PostgreSQL | Finalidade |
 |----------|---------|---------------|------------|------------|
-| **Uso pessoal local** | `docker-compose.yml` | `Dockerfile.local` | `./postgres_data` compartilhado com dev (banco `nuxt_local`) | Rodar o Bacuri na sua máquina como uma aplicação pessoal. Sobe sozinho ao ligar o Docker. |
+| **Uso pessoal local** | `docker-compose.yml` | `Dockerfile.local` | `./postgres_data` compartilhado com dev (banco `nuxt_local`) | Rodar o Bacuri na sua máquina como uma aplicação pessoal. Sobe sozinho ao ligar o Docker. Código montado como volume — alterações refletem sem rebuild. |
 | **Desenvolvimento** | `docker-compose.dev.yml` | `Dockerfile` (base) | Compartilhado | Ambiente para você desenvolver. Não sobe a app automaticamente — você entra e roda os comandos. |
 | **Produção** | `docker-compose.prod.yml` | `Dockerfile.prod` (multi-stage otimizada) | Próprio | Nginx + HTTPS + réplicas escaláveis do Nuxt + PostgreSQL + Redis. |
 
@@ -153,6 +153,10 @@ docker compose up -d
 ```
 
 Acesse a aplicação em: [http://localhost:3000](http://localhost:3000)
+
+> 💡 O código do projeto é montado como volume no container (`./:/app`), então **alterações em arquivos `.vue`, `.ts`, `.css`, etc. refletem automaticamente** sem precisar rebuildar a imagem. Basta salvar o arquivo e atualizar o navegador.
+>
+> ⚠️ Rebuild (`docker compose build --no-cache nuxt`) só é necessário quando mudar `package.json`, `package-lock.json`, `Dockerfile.local` ou `docker-compose.yml`.
 
 #### Ver logs
 

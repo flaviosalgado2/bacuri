@@ -14,7 +14,7 @@ const totaisPorMes = computed(() => {
   const receitas = Array(12).fill(0)
 
   props.contas.forEach(c => {
-    const mes = new Date(c.vencimento).getMonth()
+    const mes = Number(c.vencimento.split('-')[1]) - 1
     if (c.tipo === 'pagar') {
       despesas[mes] += Number(c.valor)
     } else {
