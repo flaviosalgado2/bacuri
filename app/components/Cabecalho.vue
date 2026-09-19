@@ -7,6 +7,8 @@ const root = computed(() => usuario.value?.perfil === 'root')
 const titulo = computed(() => rota.meta.titulo as string | undefined)
 const subtitulo = computed(() => rota.meta.subtitulo as string | undefined)
 const nomeAmbiente = computed(() => `Ambiente Docker: ${String(config.public.appEnv || 'local').toUpperCase()}`)
+const mostrarDados = useState('mostrarDadosDashboard', () => false)
+const mostrarOlho = computed(() => ['Dashboard', 'Contas a Pagar', 'Contas a Receber'].includes(titulo.value ?? ''))
 </script>
 
 <template>
@@ -30,6 +32,15 @@ const nomeAmbiente = computed(() => `Ambiente Docker: ${String(config.public.app
     </div>
 
     <div class="flex items-center justify-end gap-3">
+      <UButton
+        v-if="mostrarOlho"
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        :icon="mostrarDados ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+        :title="mostrarDados ? 'Ocultar dados sensíveis' : 'Mostrar dados sensíveis'"
+        @click="mostrarDados = !mostrarDados"
+      />
       <UBadge v-if="root" color="warning" variant="subtle">Admin</UBadge>
       <span class="hidden sm:flex items-center gap-2 text-sm text-(--ui-text-muted)">
         <UIcon name="i-lucide-user" class="w-4 h-4" />

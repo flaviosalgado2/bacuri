@@ -5,7 +5,7 @@ import type { Conta } from '~/composables/useContas'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
-const props = defineProps<{ contas: Conta[] }>()
+const props = defineProps<{ contas: Conta[], mostrarValores?: boolean }>()
 
 const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
@@ -55,7 +55,9 @@ const chartOptions = {
     tooltip: {
       callbacks: {
         label: (context: any) => {
-          return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.raw)
+          return props.mostrarValores
+            ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.raw)
+            : 'R$ ••••'
         }
       }
     }
@@ -65,7 +67,9 @@ const chartOptions = {
       beginAtZero: true,
       ticks: {
         callback: (value: any) => {
-          return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+          return props.mostrarValores
+            ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+            : '•••'
         }
       }
     }

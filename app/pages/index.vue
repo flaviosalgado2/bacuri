@@ -30,6 +30,8 @@ const proximas = computed(() => {
 
 const moeda = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
+
+const mostrarDados = useState('mostrarDadosDashboard', () => false)
 </script>
 
 <template>
@@ -44,7 +46,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade de Contas a Pagar (Pendentes)</p>
-              <p class="text-2xl font-bold text-red-500">{{ pagarPendentes.length }}</p>
+              <p class="text-2xl font-bold text-red-500">{{ mostrarDados ? pagarPendentes.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-receipt" class="w-6 h-6 text-red-500" />
           </div>
@@ -53,7 +55,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Valor Total Contas a Pagar (Pendentes)</p>
-              <p class="text-2xl font-bold text-red-500">{{ moeda(totalPagar) }}</p>
+              <p class="text-2xl font-bold text-red-500">{{ mostrarDados ? moeda(totalPagar) : 'R$ ••••' }}</p>
             </div>
             <UIcon name="i-lucide-receipt" class="w-6 h-6 text-red-500" />
           </div>
@@ -62,7 +64,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade de Contas a Receber (Pendentes)</p>
-              <p class="text-2xl font-bold text-emerald-500">{{ receberPendentes.length }}</p>
+              <p class="text-2xl font-bold text-emerald-500">{{ mostrarDados ? receberPendentes.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-hand-coins" class="w-6 h-6 text-emerald-500" />
           </div>
@@ -71,7 +73,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Valor Total Contas a Receber (Pendentes)</p>
-              <p class="text-2xl font-bold text-emerald-500">{{ moeda(totalReceber) }}</p>
+              <p class="text-2xl font-bold text-emerald-500">{{ mostrarDados ? moeda(totalReceber) : 'R$ ••••' }}</p>
             </div>
             <UIcon name="i-lucide-hand-coins" class="w-6 h-6 text-emerald-500" />
           </div>
@@ -80,7 +82,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade Geral de Contas Vencidas (Pendentes)</p>
-              <p class="text-2xl font-bold text-red-500">{{ vencidas.length }}</p>
+              <p class="text-2xl font-bold text-red-500">{{ mostrarDados ? vencidas.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-calendar-x" class="w-6 h-6 text-red-500" />
           </div>
@@ -89,7 +91,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade Geral Total (Pendentes)</p>
-              <p class="text-2xl font-bold">{{ pendentes.length }}</p>
+              <p class="text-2xl font-bold">{{ mostrarDados ? pendentes.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-clock-alert" class="w-6 h-6 text-(--ui-warning)" />
           </div>
@@ -115,10 +117,10 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
             <li v-for="c in proximas" :key="c.id">
               <ULink :to="`/contas/${c.tipo}?destaque=${c.id}`" class="flex justify-between p-3 rounded-lg transition-colors" :class="c.tipo === 'pagar' ? 'bg-red-500/10 hover:bg-red-500/20' : 'bg-emerald-500/10 hover:bg-emerald-500/20'">
                 <div>
-                  <p class="font-medium text-sm">{{ c.nome }}</p>
+                  <p class="font-medium text-sm">{{ mostrarDados ? c.nome : '••••••' }}</p>
                   <p class="text-xs text-(--ui-text-muted)">Vence em {{ data(c.vencimento) }}</p>
                 </div>
-                <p class="font-semibold text-sm">{{ moeda(Number(c.valor)) }}</p>
+                <p class="font-semibold text-sm">{{ mostrarDados ? moeda(Number(c.valor)) : 'R$ ••••' }}</p>
               </ULink>
             </li>
           </ul>
@@ -127,7 +129,7 @@ const data = (d: string) => paraDataLocal(d).toLocaleDateString('pt-BR')
 
       <UCard>
         <template #header><h3 class="font-semibold">Despesas mensais</h3></template>
-        <GraficoDespesasMensais :contas="contas || []" />
+        <GraficoDespesasMensais :contas="contas || []" :mostrar-valores="mostrarDados" />
       </UCard>
     </template>
   </div>

@@ -35,7 +35,7 @@ async function enviar() {
   carregando.value = true
   try {
     await atualizar(id, formulario)
-    router.push('/contas')
+    router.push(`/contas/${formulario.tipo}`)
   } catch {
     // erro já tratado pelo composable (toast)
   } finally {

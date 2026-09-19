@@ -9,6 +9,7 @@ const { mudarStatus, excluir, criar } = useContas()
 
 const rota = useRoute()
 const destaqueId = computed(() => Number(rota.query.destaque))
+const mostrarDados = useState('mostrarDadosDashboard', () => false)
 
 const formatarValor = (v: string) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v))
 
@@ -138,12 +139,12 @@ async function confirmarClonagem() {
       <tbody>
         <tr v-for="c in contas" :key="c.id" :class="classeLinha(c)">
           <td class="py-3 px-4">
-            <p class="font-medium">{{ c.nome }}</p>
-            <p v-if="c.observacoes" class="text-xs text-(--ui-text-muted) truncate max-w-[200px]">{{ c.observacoes }}</p>
+            <p class="font-medium">{{ mostrarDados ? c.nome : '••••••' }}</p>
+            <p v-if="c.observacoes && mostrarDados" class="text-xs text-(--ui-text-muted) truncate max-w-[200px]">{{ c.observacoes }}</p>
           </td>
           <td class="py-3 px-4" :class="atrasada(c) ? 'text-red-500 font-medium' : ''">{{ formatarData(c.vencimento) }}</td>
           <td class="py-3 px-4">{{ c.descontoAte ? formatarData(c.descontoAte) : '-' }}</td>
-          <td class="py-3 px-4 text-right font-medium">{{ formatarValor(c.valor) }}</td>
+          <td class="py-3 px-4 text-right font-medium">{{ mostrarDados ? formatarValor(c.valor) : 'R$ ••••' }}</td>
           <td class="py-3 px-4 text-center">
             <UBadge :color="c.status === 'pago' ? 'success' : 'warning'" size="xs">{{ c.status === 'pago' ? 'Pago' : 'Pendente' }}</UBadge>
           </td>
