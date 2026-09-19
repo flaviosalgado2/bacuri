@@ -1,29 +1,35 @@
 services:
 
   # --------------------------------------------------
-  # Nuxt / Node.js (uso pessoal local)
+  # Nuxt / Node.js (desenvolvimento manual)
   # --------------------------------------------------
   nuxt:
-    build:
-      context: .
-      dockerfile: Dockerfile.local
-    container_name: nuxt-local
-    restart: always
+    build: .
+    container_name: nuxt-dev
+
+    working_dir: /app
 
     ports:
       - "3000:3000"
 
+    volumes:
+      # Código do projeto montado para desenvolvimento
+      - .:/app
+
     env_file:
-      - .env
+      - .env.dev
 
     environment:
-      # development porque o Dockerfile.local roda npm run dev
       NODE_ENV: development
-      APP_ENV: local
+      APP_ENV: dev
       HOST: 0.0.0.0
       PORT: 3000
-      # Usa o banco nuxt_local, separado do ambiente de desenvolvimento
-      DATABASE_URL: postgresql://nuxt_dev:nuxt_dev@postgres-shared:5432/nuxt_local
+      # Sobrescreve o DATABASE_URL do .env para apontar para o container postgres compartilhado
+      DATABASE_URL: postgresql://nuxt_dev:nuxt_dev@postgres-shared:5432/nuxt_dev
+
+    # Ambiente de desenvolvimento: não inicia a aplicação automaticamente.
+    # Você entra no container e roda os comandos manualmente.
+    command: tail -f /dev/null
 
     depends_on:
       postgres:
@@ -51,7 +57,7 @@ services:
       - ./postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nuxt_dev -d nuxt_local"]
+      test: ["CMD-SHELL", "pg_isready -U nuxt_dev -d nuxt_dev"]
       interval: 5s
       timeout: 5s
       retries: 5

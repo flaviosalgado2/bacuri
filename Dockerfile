@@ -6,6 +6,8 @@ RUN apt-get update \
 
 WORKDIR /app
 
+# Garante que o usuário node possa instalar dependências e gerar arquivos no volume
+RUN chown -R node:node /app
 USER node
 
 CMD ["tail", "-f", "/dev/null"]

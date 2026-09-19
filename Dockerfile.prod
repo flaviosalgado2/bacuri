@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1
+
+FROM node:24.20.0-bookworm-slim AS base
+
+WORKDIR /app
+
+# --------------------------------------------------
+# Stage 1: dependências de build
+# --------------------------------------------------
+FROM base AS deps
+
+RUN apt-get update \
+    && apt-get install -y git \
+    && rm -rf /var/lib/apt/lists/* \
+    && chown -R node:node /app
+
+COPY --chown=node:node package.json package-lock.json ./
+USER node
+RUN npm ci
+
+# --------------------------------------------------
+# Stage 2: build da aplicação
+# --------------------------------------------------
+FROM deps AS builder
+
+COPY --chown=node:node . .
+RUN npm run build
+
+# --------------------------------------------------
+# Stage 3: runtime de produção
+# --------------------------------------------------
+FROM base AS runtime
+
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+# Instala apenas dependências de produção para imagem final enxuta
+COPY --from=builder --chown=node:node /app/package.json /app/package-lock.json ./
+RUN npm ci --omit=dev \
+    && chown -R node:node /app \
+    && apt-get update \
+    && apt-get install -y curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder --chown=node:node /app/.output ./.output
+COPY --from=builder --chown=node:node /app/server/db/migrations ./server/db/migrations
+
+USER node
+EXPOSE 3000
+
+CMD ["node", ".output/server/index.mjs"]

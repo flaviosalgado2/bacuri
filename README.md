@@ -113,49 +113,54 @@ git clone <url-do-repositorio>
 cd bacuri
 ```
 
-2. Copie o arquivo de exemplo de variáveis de ambiente:
+2. Os arquivos de variáveis de ambiente já estão separados por ambiente:
 
-```bash
-cp .env.example .env
-```
+| Arquivo | Ambiente |
+|---------|----------|
+| `.env` | Uso pessoal local (`docker-compose.yml`) |
+| `.env.dev` | Desenvolvimento (`docker-compose.dev.yml`) |
+| `.env.prod` | Produção (`docker-compose.prod.yml`) |
 
-3. Ajuste as variáveis no `.env` conforme necessário:
+3. Ajuste as variáveis em cada arquivo conforme necessário.
 
-```env
-NUXT_SESSION_PASSWORD=change-me-in-production-min-32-characters-long
-DATABASE_URL=postgresql://nuxt_dev:nuxt_dev@localhost:5432/nuxt_dev
-
-# Usuário root criado automaticamente na primeira execução
-ROOT_EMAIL=root@admin.com
-ROOT_PASSWORD=admin123456
-```
-
-> **Importante:** em produção, defina uma `NUXT_SESSION_PASSWORD` forte com pelo menos 32 caracteres e altere as credenciais do root.
+> **Importante:** em produção, defina uma `NUXT_SESSION_PASSWORD` forte com pelo menos 32 caracteres e altere as credenciais do root e do PostgreSQL.
 
 ---
 
 ## Como rodar
 
-### Opção 1: Com Docker Compose (recomendado)
+O projeto possui **3 ambientes** diferentes, cada um com seu arquivo Docker Compose:
 
-Essa opção sobe a aplicação Nuxt e o banco PostgreSQL em containers isolados.
+| Ambiente | Arquivo | Imagem Docker | PostgreSQL | Finalidade |
+|----------|---------|---------------|------------|------------|
+| **Uso pessoal local** | `docker-compose.yml` | `Dockerfile.local` | `./postgres_data` compartilhado com dev (banco `nuxt_local`) | Rodar o Bacuri na sua máquina como uma aplicação pessoal. Sobe sozinho ao ligar o Docker. |
+| **Desenvolvimento** | `docker-compose.dev.yml` | `Dockerfile` (base) | Compartilhado | Ambiente para você desenvolver. Não sobe a app automaticamente — você entra e roda os comandos. |
+| **Produção** | `docker-compose.prod.yml` | `Dockerfile.prod` (multi-stage otimizada) | Próprio | Nginx + HTTPS + réplicas escaláveis do Nuxt + PostgreSQL + Redis. |
+
+> **Nota:** os ambientes **local** e **dev** compartilham o mesmo container PostgreSQL (`container_name: postgres`) e o mesmo diretório de dados `./postgres_data`, mas usam bancos separados:
+> - **dev** → `nuxt_dev`
+> - **local** → `nuxt_local`
+
+---
+
+### Opção 1: Uso pessoal local (recomendado para uso próprio)
+
+Esse é o ambiente para você usar o Bacuri na sua própria máquina, com seus dados reais. Ele builda a aplicação e sobe tudo automaticamente.
 
 ```bash
 # Inicie os serviços em segundo plano
 docker compose up -d
-
-# Instale as dependências (apenas na primeira vez ou quando mudar o package.json)
-docker exec nuxt-dev npm install
-
-# Inicie o servidor de desenvolvimento
-docker exec -it nuxt-dev npm run dev -- --host 0.0.0.0
 ```
 
 Acesse a aplicação em: [http://localhost:3000](http://localhost:3000)
 
-O banco de dados fica disponível em `localhost:5432`.
+#### Ver logs
 
-#### Encerrar os containers
+```bash
+docker compose logs -f nuxt
+```
+
+#### Encerrar
 
 ```bash
 docker compose down
@@ -169,9 +174,122 @@ docker compose down -v
 
 > ⚠️ `down -v` remove todos os volumes, incluindo os dados do PostgreSQL.
 
+#### Iniciar automaticamente com o sistema
+
+Como o compose local usa `restart: always`, os containers sobem automaticamente quando o Docker daemon iniciar. Para isso funcionar, o Docker precisa estar configurado para iniciar com o sistema operacional:
+
+- **Linux:** `sudo systemctl enable docker`
+- **macOS:** Docker Desktop → Settings → General → "Start Docker Desktop when you log in"
+- **Windows:** Docker Desktop → Settings → General → "Start Docker Desktop when you sign in"
+
 ---
 
-### Opção 2: Localmente (sem Docker)
+### Opção 2: Desenvolvimento
+
+Use o arquivo `docker-compose.dev.yml`. Esse ambiente monta o código do projeto no container e **não inicia a aplicação automaticamente**, para você ter controle total.
+
+```bash
+# Sobe o container de desenvolvimento e o banco
+docker compose -f docker-compose.dev.yml up -d
+
+# Instale as dependências (apenas na primeira vez ou quando mudar o package.json)
+docker exec nuxt-dev npm install
+
+# Inicie o servidor de desenvolvimento
+docker exec -it nuxt-dev npm run dev -- --host 0.0.0.0
+```
+
+Acesse a aplicação em: [http://localhost:3000](http://localhost:3000)
+
+O banco de dados fica disponível em `localhost:5432`.
+
+#### Encerrar
+
+```bash
+docker compose -f docker-compose.dev.yml down
+```
+
+#### Reiniciar do zero (remove banco local)
+
+```bash
+docker compose -f docker-compose.dev.yml down -v
+```
+
+> ⚠️ `down -v` remove todos os volumes, incluindo os dados do PostgreSQL.
+
+---
+
+### Opção 3: Produção com Docker Compose (Nginx + HTTPS + múltiplas réplicas)
+
+Use o arquivo `docker-compose.prod.yml`. Essa configuração é profissional e inclui:
+
+- **Nginx** como reverse proxy, load balancer e HTTPS
+- **Réplicas escaláveis do Nuxt** — você define a quantidade
+- **PostgreSQL** com volume persistente
+- **Redis** para cache e sessões compartilhadas
+
+#### 1. Configure as variáveis de ambiente
+
+Edite o `.env.prod` com valores seguros (especialmente `NUXT_SESSION_PASSWORD`, `POSTGRES_PASSWORD` e `ROOT_PASSWORD`).
+
+#### 2. Prepare o certificado SSL
+
+Para testes locais, gere um certificado autoassinado:
+
+```bash
+./scripts/generate-ssl.sh
+```
+
+> Em produção real, substitua os arquivos `nginx/ssl/cert.pem` e `nginx/ssl/key.pem` pelos certificados válidos do seu domínio.
+
+#### 3. Inicie os serviços
+
+Por padrão sobe 1 réplica do Nuxt:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Para subir com mais réplicas (exemplo: 5):
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build --scale nuxt=5
+```
+
+Acesse a aplicação em:
+- **HTTPS:** [https://localhost](https://localhost)
+- **HTTP:** redireciona automaticamente para HTTPS
+
+#### Ver logs de produção
+
+```bash
+# Todos os serviços
+docker compose -f docker-compose.prod.yml logs -f
+
+# Apenas o Nginx
+docker compose -f docker-compose.prod.yml logs -f nginx
+
+# Apenas as réplicas do Nuxt
+docker compose -f docker-compose.prod.yml logs -f nuxt
+```
+
+#### Encerrar os containers de produção
+
+```bash
+docker compose -f docker-compose.prod.yml down
+```
+
+#### Reiniciar do zero em produção (remove banco e cache)
+
+```bash
+docker compose -f docker-compose.prod.yml down -v
+```
+
+> ⚠️ `down -v` remove todos os volumes, incluindo os dados do PostgreSQL e Redis.
+
+---
+
+### Opção 4: Localmente (sem Docker)
 
 Você precisa de um PostgreSQL rodando localmente e apontado pela variável `DATABASE_URL`.
 
@@ -252,8 +370,18 @@ bacuri/
 │   └── utils/              # Utilitários do servidor
 ├── public/                 # Arquivos públicos
 ├── tests/                  # Testes com Vitest
-├── docker-compose.yml      # Orquestração dos containers
-├── Dockerfile              # Imagem do ambiente Node.js
+├── docker-compose.yml      # Orquestração do ambiente de uso pessoal local
+├── docker-compose.dev.yml  # Orquestração do ambiente de desenvolvimento
+├── docker-compose.prod.yml # Orquestração dos containers de produção
+├── Dockerfile              # Imagem base do ambiente de desenvolvimento
+├── Dockerfile.local        # Imagem para uso pessoal local
+├── Dockerfile.prod         # Imagem otimizada para produção
+├── postgres-init.sql       # Cria os bancos nuxt_local e nuxt_dev no PostgreSQL
+├── nginx/                  # Configuração do Nginx (HTTPS + load balancer)
+│   ├── nginx.conf          # Configuração principal
+│   └── ssl/                # Certificados SSL (você coloca os reais aqui)
+└── scripts/                # Scripts auxiliares
+    └── generate-ssl.sh     # Gera certificado SSL autoassinado para testes
 ├── drizzle.config.ts       # Configuração do Drizzle Kit
 ├── nuxt.config.ts          # Configuração do Nuxt
 ├── vitest.config.ts        # Configuração dos testes
@@ -278,12 +406,68 @@ npm run test:watch
 
 ## Variáveis de ambiente
 
-| Variável | Descrição | Obrigatória |
-|----------|-----------|-------------|
-| `NUXT_SESSION_PASSWORD` | Chave secreta para criptografar sessões (mín. 32 caracteres) | Sim |
-| `DATABASE_URL` | URL de conexão com o PostgreSQL | Sim |
-| `ROOT_EMAIL` | E-mail do usuário root criado automaticamente | Não |
-| `ROOT_PASSWORD` | Senha do usuário root criado automaticamente | Não |
+| Variável | Descrição | Obrigatória | Arquivo |
+|----------|-----------|-------------|---------|
+| `NUXT_SESSION_PASSWORD` | Chave secreta para criptografar sessões (mín. 32 caracteres) | Sim | `.env`, `.env.dev`, `.env.prod` |
+| `DATABASE_URL` | URL de conexão com o PostgreSQL | Sim | `.env`, `.env.dev`, `.env.prod` |
+| `ROOT_EMAIL` | E-mail do usuário root criado automaticamente | Não | `.env`, `.env.dev`, `.env.prod` |
+| `ROOT_PASSWORD` | Senha do usuário root criado automaticamente | Não | `.env`, `.env.dev`, `.env.prod` |
+| `POSTGRES_DB` | Nome do banco de dados usado pelo `docker-compose.prod.yml` | Sim (produção) | `.env.prod` |
+| `POSTGRES_USER` | Usuário do PostgreSQL usado pelo `docker-compose.prod.yml` | Sim (produção) | `.env.prod` |
+| `POSTGRES_PASSWORD` | Senha do PostgreSQL usada pelo `docker-compose.prod.yml` | Sim (produção) | `.env.prod` |
+| `APP_ENV` | Identificação do ambiente (`local`, `dev`, `prod`) | Definido nos composes | - |
+
+---
+
+## Cheat Sheet
+
+Referência rápida dos comandos mais usados.
+
+### Uso pessoal local
+
+```bash
+docker compose up -d
+docker compose logs -f nuxt
+docker compose down
+docker compose down -v
+```
+
+### Desenvolvimento
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+docker exec nuxt-dev npm install
+docker exec -it nuxt-dev npm run dev -- --host 0.0.0.0
+docker compose -f docker-compose.dev.yml down
+```
+
+### Produção
+
+```bash
+./scripts/generate-ssl.sh
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml up -d --build --scale nuxt=5
+docker compose -f docker-compose.prod.yml logs -f
+docker compose -f docker-compose.prod.yml down
+```
+
+### Backup do PostgreSQL
+
+```bash
+# Backup
+docker exec postgres-prod pg_dump -U bacuri -d bacuri > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Restore
+docker exec -i postgres-prod psql -U bacuri -d bacuri < backup_20260918_120000.sql
+```
+
+### Copiar dados de dev para local (comando único)
+
+Se precisar copiar os dados do banco `nuxt_dev` para `nuxt_local`:
+
+```bash
+docker exec postgres pg_dump -U nuxt_dev -d nuxt_dev | docker exec -i postgres psql -U nuxt_dev -d nuxt_local
+```
 
 ---
 
