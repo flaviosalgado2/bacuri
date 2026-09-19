@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { FormularioConta } from '~/composables/useContas'
 
-const props = defineProps<{ modelo: FormularioConta; carregando?: boolean; rotulo?: string }>()
+const props = defineProps<{ modelo: FormularioConta; carregando?: boolean; rotulo?: string; aoCancelar?: () => void }>()
 const emit = defineEmits<{ (e: 'update:modelo', v: FormularioConta): void; (e: 'submit'): void }>()
 
 const schema = z.object({
@@ -62,7 +62,8 @@ const status = [
     </div>
 
     <div class="flex justify-end gap-3 pt-4">
-      <UButton type="button" color="neutral" variant="ghost" to="/contas">Cancelar</UButton>
+      <UButton v-if="aoCancelar" type="button" color="neutral" variant="ghost" @click="aoCancelar">Cancelar</UButton>
+      <UButton v-else type="button" color="neutral" variant="ghost" to="/contas">Cancelar</UButton>
       <UButton type="submit" color="primary" :loading="carregando">{{ rotulo || 'Salvar' }}</UButton>
     </div>
   </UForm>

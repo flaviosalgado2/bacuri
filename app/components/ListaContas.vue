@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { Conta } from '~/composables/useContas'
+import type { Conta, FormularioConta } from '~/composables/useContas'
+import { dataMesSeguinte } from '~/composables/useContas'
 
 const props = defineProps<{ contas: Conta[] }>()
 const emit = defineEmits<{ (e: 'atualizar'): void }>()
 
-const { mudarStatus, excluir } = useContas()
+const { mudarStatus, excluir, criar } = useContas()
 
 const rota = useRoute()
 const destaqueId = computed(() => Number(rota.query.destaque))
@@ -78,6 +79,47 @@ async function remover(c: Conta) {
     }
   )
 }
+
+const modalClonarAberto = ref(false)
+const clonando = ref(false)
+const contaOriginal = ref<Conta | null>(null)
+const dadosClonagem = ref<FormularioConta>({
+  nome: '',
+  tipo: 'pagar',
+  valor: 0,
+  vencimento: '',
+  descontoAte: null,
+  observacoes: null,
+  status: 'pendente'
+})
+
+function abrirClonagem(c: Conta) {
+  contaOriginal.value = c
+  dadosClonagem.value = {
+    nome: c.nome,
+    tipo: c.tipo,
+    valor: Number(c.valor),
+    vencimento: dataMesSeguinte(c.vencimento),
+    descontoAte: c.descontoAte ? dataMesSeguinte(c.descontoAte) : null,
+    observacoes: c.observacoes,
+    status: 'pendente'
+  }
+  modalClonarAberto.value = true
+}
+
+async function confirmarClonagem() {
+  if (!contaOriginal.value) return
+  clonando.value = true
+  try {
+    await criar(dadosClonagem.value)
+    modalClonarAberto.value = false
+    emit('atualizar')
+  } catch {
+    // erro já tratado pelo composable (toast)
+  } finally {
+    clonando.value = false
+  }
+}
 </script>
 
 <template>
@@ -108,6 +150,7 @@ async function remover(c: Conta) {
           <td class="py-3 px-4 text-right">
             <div class="flex justify-end gap-1">
               <UButton :color="c.status === 'pago' ? 'warning' : 'success'" variant="ghost" size="xs" :icon="c.status === 'pago' ? 'i-lucide-circle-x' : 'i-lucide-circle-check'" :title="c.status === 'pago' ? 'Marcar como pendente' : 'Marcar como pago'" @click="toggle(c)" />
+              <UButton color="info" variant="ghost" size="xs" icon="i-lucide-copy" title="Clonar para o mês que vem" @click="abrirClonagem(c)" />
               <UButton :to="`/contas/${c.id}/editar`" color="neutral" variant="ghost" size="xs" icon="i-lucide-pencil" title="Editar" />
               <UButton color="error" variant="ghost" size="xs" icon="i-lucide-trash-2" title="Excluir" @click="remover(c)" />
             </div>
@@ -122,11 +165,17 @@ async function remover(c: Conta) {
     </div>
 
     <UModal v-model:open="modalAberto" :title="modalTitulo" :description="modalDescricao">
-      <template #footer>
+      <template #body>
         <div class="flex justify-end gap-2 w-full">
           <UButton color="neutral" variant="ghost" @click="modalAberto = false">Cancelar</UButton>
           <UButton :color="modalCor" @click="confirmar">Confirmar</UButton>
         </div>
+      </template>
+    </UModal>
+
+    <UModal v-model:open="modalClonarAberto" title="Clonar conta" description="Confirme os dados da conta clonada para o próximo mês.">
+      <template #body>
+        <FormularioConta v-model:modelo="dadosClonagem" :carregando="clonando" rotulo="Clonar conta" :ao-cancelar="() => modalClonarAberto = false" @submit="confirmarClonagem" />
       </template>
     </UModal>
   </div>

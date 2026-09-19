@@ -42,6 +42,15 @@ export interface FormularioConta {
   status: 'pendente' | 'pago'
 }
 
+export function dataMesSeguinte(dataStr: string): string {
+  if (!dataStr) return ''
+  const [ano, mes, dia] = dataStr.split('-').map(Number)
+  const ultimoDiaProximoMes = new Date(ano, mes + 1, 0).getDate()
+  const diaFinal = Math.min(dia, ultimoDiaProximoMes)
+  const dataFinal = new Date(ano, mes, diaFinal)
+  return dataFinal.toISOString().split('T')[0]
+}
+
 export function useContas() {
   const toast = useToast()
   const apiFetch = import.meta.server ? useRequestFetch() : $fetch
