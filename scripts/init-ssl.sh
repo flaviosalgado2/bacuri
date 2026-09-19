@@ -23,12 +23,7 @@ docker compose -f docker-compose.prod.yml run --rm certbot certonly \
   --non-interactive \
   --verbose
 
-echo "Copiando certificado para nginx/ssl/..."
-mkdir -p nginx/ssl
-cp "certbot/conf/live/$DOMAIN/fullchain.pem" nginx/ssl/cert.pem
-cp "certbot/conf/live/$DOMAIN/privkey.pem" nginx/ssl/key.pem
+echo "Reiniciando Nginx para aplicar o certificado..."
+docker compose -f docker-compose.prod.yml restart nginx
 
-echo "Reiniciando Nginx..."
-docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
-
-echo "Pronto! Certificado salvo em certbot/conf/live/$DOMAIN/ e copiado para nginx/ssl/"
+echo "Pronto! Certificado salvo em certbot/conf/live/$DOMAIN/"

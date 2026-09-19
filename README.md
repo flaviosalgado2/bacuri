@@ -255,9 +255,9 @@ Certifique-se de que o domínio aponte para o servidor e a porta 80 está libera
 ./scripts/init-ssl.sh
 ```
 
-A renovação é automática pelo container `certbot-prod` (verifica a cada 12 horas).
+A renovação é automática: o container `certbot-prod` verifica a cada 12 horas e envia um sinal de reload para o Nginx quando o certificado é renovado.
 
-> Se preferir usar certificado comprado, substitua manualmente os arquivos `nginx/ssl/cert.pem` e `nginx/ssl/key.pem`.
+> Se preferir usar certificado comprado, salve os arquivos em `certbot/conf/live/seu-dominio/fullchain.pem` e `certbot/conf/live/seu-dominio/privkey.pem`.
 
 #### 3. Inicie os serviços
 
@@ -398,12 +398,14 @@ bacuri/
 │   ├── conf/               # Certificados gerados pelo Certbot
 │   └── www/                # Webroot para desafios ACME
 ├── nginx/                  # Configuração do Nginx (HTTPS + load balancer)
-│   ├── nginx.conf          # Configuração principal
+│   ├── nginx.conf          # Template de configuração principal
+│   ├── docker-entrypoint.sh # Entrypoint que substitui variáveis e inicia o Nginx
 │   └── ssl/                # Certificados SSL (autoassinados ou reais)
 └── scripts/                # Scripts auxiliares
     ├── generate-ssl.sh     # Gera certificado SSL autoassinado para testes
     ├── init-ssl.sh         # Emite certificado Let's Encrypt
-    └── renew-ssl.sh        # Renova certificado Let's Encrypt manualmente
+    ├── renew-ssl.sh        # Renova certificado Let's Encrypt manualmente
+    └── certbot-entrypoint.sh # Entrypoint do container Certbot (renovação automática)
 ├── drizzle.config.ts       # Configuração do Drizzle Kit
 ├── nuxt.config.ts          # Configuração do Nuxt
 ├── vitest.config.ts        # Configuração dos testes
