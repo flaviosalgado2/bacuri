@@ -24,6 +24,7 @@ services:
       # development porque o Dockerfile.local roda npm run dev
       NODE_ENV: development
       APP_ENV: local
+      NUXT_PUBLIC_APP_ENV: local
       HOST: 0.0.0.0
       PORT: 3000
       # Usa o banco nuxt_local, separado do ambiente de desenvolvimento
