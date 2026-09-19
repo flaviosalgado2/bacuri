@@ -1,0 +1,33 @@
+# Ambiente
+.env
+.env.dev
+.env.prod
+
+# Dependências
+node_modules
+
+# Build e caches do Nuxt
+.output
+.nuxt
+.nitro
+.cache
+dist
+.data
+
+# Dados locais
+postgres_data
+certbot
+
+# Logs
+logs
+*.log
+
+# IDE e sistema
+.DS_Store
+.fleet
+.idea
+.vscode
+
+# Git
+.git
+.gitignore
