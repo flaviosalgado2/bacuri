@@ -34,7 +34,8 @@ export function useTema() {
   })
 
   const icone = computed(() => info.value.icone)
-  const rotulo = computed(() => `Tema: ${info.value.rotulo}`)
+  const rotulo = computed(() => info.value.rotulo)
+  const titulo = computed(() => `Tema: ${info.value.rotulo}`)
 
   function alternar() {
     const indiceAtual = PREFERENCIAS.indexOf(preferencia.value)

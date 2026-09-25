@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { usuario, sair } = useAutenticacao()
 const rota = useRoute()
-const { icone, rotulo, alternar } = useTema()
+const { icone, rotulo, titulo, alternar } = useTema()
 
 const root = computed(() => usuario.value?.perfil === 'root')
 
@@ -53,7 +53,7 @@ watchEffect(() => {
           <UBadge v-if="root" color="warning" size="xs">Root</UBadge>
         </div>
         <div class="flex gap-2">
-          <UButton color="neutral" variant="ghost" :icon="icone" class="flex-1" @click="alternar">
+          <UButton color="neutral" variant="ghost" :icon="icone" :title="titulo" class="flex-1" @click="alternar">
             {{ rotulo }}
           </UButton>
           <UButton color="neutral" variant="ghost" icon="i-lucide-log-out" class="flex-1" @click="sair">
