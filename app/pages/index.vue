@@ -23,9 +23,18 @@ const vencidas = computed(() => {
 })
 
 const proximas = computed(() => {
-  const limite = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  const hoje = new Date()
+  hoje.setHours(0, 0, 0, 0)
+
+  const limite = new Date()
+  limite.setDate(hoje.getDate() + 7)
+  limite.setHours(23, 59, 59, 999)
+
   return todasPendentes.value
-    .filter(c => paraDataLocal(c.vencimento) <= limite)
+    .filter(c => {
+      const vencimento = paraDataLocal(c.vencimento)
+      return vencimento >= hoje && vencimento <= limite
+    })
     .sort((a, b) => +paraDataLocal(a.vencimento) - +paraDataLocal(b.vencimento))
     .slice(0, 5)
 })

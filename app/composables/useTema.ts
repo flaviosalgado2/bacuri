@@ -4,15 +4,22 @@ const PREFERENCIAS: TemaPreferencia[] = ['light', 'dark', 'system']
 
 export function useTema() {
   const colorMode = useColorMode()
+  const temaSalvo = useState<TemaPreferencia>('tema-preferencia', () => 'system')
 
   const preferencia = computed<TemaPreferencia>({
-    get: () => (colorMode.preference as TemaPreferencia) || 'system',
+    get: () => temaSalvo.value,
     set: (valor) => {
+      temaSalvo.value = valor
       colorMode.preference = valor
     }
   })
 
-  const valorAtual = computed(() => colorMode.value as 'light' | 'dark')
+  // Mantém sincronizado caso o colorMode seja alterado por outro mecanismo.
+  watch(() => colorMode.preference, (valor) => {
+    if (valor && valor !== temaSalvo.value) {
+      temaSalvo.value = valor as TemaPreferencia
+    }
+  })
 
   const info = computed(() => {
     switch (preferencia.value) {
@@ -27,7 +34,7 @@ export function useTema() {
   })
 
   const icone = computed(() => info.value.icone)
-  const rotulo = computed(() => info.value.rotulo)
+  const rotulo = computed(() => `Tema: ${info.value.rotulo}`)
 
   function alternar() {
     const indiceAtual = PREFERENCIAS.indexOf(preferencia.value)
@@ -37,7 +44,6 @@ export function useTema() {
 
   return {
     preferencia,
-    valorAtual,
     icone,
     rotulo,
     alternar
