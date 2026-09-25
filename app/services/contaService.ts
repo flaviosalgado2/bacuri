@@ -8,7 +8,7 @@ export function createContaService(fetch: typeof $fetch = $fetch) {
     buscar: (id: number) =>
       fetch<Conta>(`/api/contas/${id}`),
 
-    criar: (dados: FormularioConta) =>
+    criar: (dados: FormularioConta & { tipo: 'pagar' | 'receber' }) =>
       fetch<Conta>('/api/contas', {
         method: 'POST',
         body: { ...dados, descontoAte: dados.descontoAte || null, observacoes: dados.observacoes || null }

@@ -5,25 +5,27 @@ import type { Conta } from '~/composables/useContas'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
-const props = defineProps<{ contas: Conta[], mostrarValores?: boolean }>()
+const props = defineProps<{
+  contasPagar: Conta[]
+  contasReceber: Conta[]
+  mostrarValores?: boolean
+}>()
 
 const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
-const totaisPorMes = computed(() => {
-  const despesas = Array(12).fill(0)
-  const receitas = Array(12).fill(0)
-
-  props.contas.forEach(c => {
+function totalizarPorMes(contas: Conta[]) {
+  const totais = Array(12).fill(0)
+  contas.forEach(c => {
     const mes = Number(c.vencimento.split('-')[1]) - 1
-    if (c.tipo === 'pagar') {
-      despesas[mes] += Number(c.valor)
-    } else {
-      receitas[mes] += Number(c.valor)
-    }
+    totais[mes] += Number(c.valor)
   })
+  return totais
+}
 
-  return { despesas, receitas }
-})
+const totaisPorMes = computed(() => ({
+  despesas: totalizarPorMes(props.contasPagar),
+  receitas: totalizarPorMes(props.contasReceber)
+}))
 
 const chartData = computed(() => ({
   labels: meses,

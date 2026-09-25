@@ -5,7 +5,8 @@ export const urlTeste = 'postgresql://nuxt_dev:nuxt_dev@localhost:5432/nuxt_test
 export async function limparBanco() {
   const pool = new Pool({ connectionString: urlTeste })
   await pool.query(`
-    DROP TABLE IF EXISTS contas CASCADE;
+    DROP TABLE IF EXISTS contas_pagar CASCADE;
+    DROP TABLE IF EXISTS contas_receber CASCADE;
     DROP TABLE IF EXISTS configuracoes CASCADE;
     DROP TABLE IF EXISTS usuarios CASCADE;
     DROP TYPE IF EXISTS perfil CASCADE;

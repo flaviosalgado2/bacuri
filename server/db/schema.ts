@@ -1,7 +1,6 @@
 import { pgTable, serial, varchar, text, timestamp, date, integer, decimal, boolean, pgEnum } from 'drizzle-orm/pg-core'
 
 export const perfilEnum = pgEnum('perfil', ['usuario', 'root'])
-export const tipoEnum = pgEnum('tipo', ['pagar', 'receber'])
 export const statusEnum = pgEnum('status', ['pendente', 'pago'])
 
 export const usuarios = pgTable('usuarios', {
@@ -14,11 +13,10 @@ export const usuarios = pgTable('usuarios', {
   criadoEm: timestamp('criado_em').notNull().defaultNow()
 })
 
-export const contas = pgTable('contas', {
+const colunasConta = {
   id: serial('id').primaryKey(),
   usuarioId: integer('usuario_id').notNull().references(() => usuarios.id, { onDelete: 'cascade' }),
   nome: varchar('nome', { length: 255 }).notNull(),
-  tipo: tipoEnum('tipo').notNull(),
   valor: decimal('valor', { precision: 15, scale: 2 }).notNull(),
   vencimento: date('vencimento').notNull(),
   descontoAte: date('desconto_ate'),
@@ -26,7 +24,10 @@ export const contas = pgTable('contas', {
   status: statusEnum('status').notNull().default('pendente'),
   criadoEm: timestamp('criado_em').notNull().defaultNow(),
   atualizadoEm: timestamp('atualizado_em').notNull().defaultNow()
-})
+}
+
+export const contasPagar = pgTable('contas_pagar', colunasConta)
+export const contasReceber = pgTable('contas_receber', colunasConta)
 
 export const configuracoes = pgTable('configuracoes', {
   id: serial('id').primaryKey(),
@@ -46,6 +47,8 @@ export const configuracoes = pgTable('configuracoes', {
 })
 
 export type Usuario = typeof usuarios.$inferSelect
-export type NovaConta = typeof contas.$inferInsert
-export type Conta = typeof contas.$inferSelect
+export type NovaContaPagar = typeof contasPagar.$inferInsert
+export type ContaPagar = typeof contasPagar.$inferSelect
+export type NovaContaReceber = typeof contasReceber.$inferInsert
+export type ContaReceber = typeof contasReceber.$inferSelect
 export type Configuracao = typeof configuracoes.$inferSelect

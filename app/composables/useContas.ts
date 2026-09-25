@@ -34,7 +34,6 @@ export interface ResultadoListagemContas {
 
 export interface FormularioConta {
   nome: string
-  tipo: 'pagar' | 'receber'
   valor: number
   vencimento: string
   descontoAte?: string | null

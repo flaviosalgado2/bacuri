@@ -2,12 +2,22 @@
 import { z } from 'zod'
 import type { FormularioConta } from '~/composables/useContas'
 
-const props = defineProps<{ modelo: FormularioConta; carregando?: boolean; rotulo?: string; aoCancelar?: () => void }>()
-const emit = defineEmits<{ (e: 'update:modelo', v: FormularioConta): void; (e: 'submit'): void }>()
+const props = defineProps<{
+  modelo: FormularioConta
+  tipo: 'pagar' | 'receber'
+  carregando?: boolean
+  rotulo?: string
+  aoCancelar?: () => void
+  modoEdicao?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelo', v: FormularioConta): void
+  (e: 'submit'): void
+}>()
 
 const schema = z.object({
   nome: z.string().min(1, 'Obrigatório').max(255),
-  tipo: z.enum(['pagar', 'receber']),
   valor: z.number().min(0.01, 'Valor inválido'),
   vencimento: z.string().min(1, 'Obrigatório'),
   descontoAte: z.string().optional().nullable(),
@@ -24,20 +34,25 @@ const status = [
   { label: 'Pendente', value: 'pendente' },
   { label: 'Pago', value: 'pago' }
 ]
+
+const tituloContexto = computed(() => {
+  const acao = props.modoEdicao ? 'Editar' : props.rotulo === 'Clonar conta' ? 'Clonar' : 'Nova'
+  const tipo = props.tipo === 'pagar' ? 'a Pagar' : 'a Receber'
+  return `${acao} Conta ${tipo}`
+})
+
+const corContexto = computed(() => props.tipo === 'pagar' ? 'error' : 'success')
 </script>
 
 <template>
   <UForm :schema="schema" :state="estado" class="space-y-5" @submit="emit('submit')">
+    <UBadge :color="corContexto" variant="subtle" class="mb-2">
+      {{ tituloContexto }}
+    </UBadge>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <UFormField label="Nome" name="nome" required class="md:col-span-2">
         <UInput v-model="estado.nome" placeholder="Ex: Aluguel" icon="i-lucide-file-text" class="w-full" />
-      </UFormField>
-
-      <UFormField label="Tipo" name="tipo" required>
-        <USelect v-model="estado.tipo" :items="[
-          { label: 'A Pagar', value: 'pagar' },
-          { label: 'A Receber', value: 'receber' }
-        ]" class="w-full" />
       </UFormField>
 
       <UFormField label="Valor" name="valor" required>
@@ -63,7 +78,7 @@ const status = [
 
     <div class="flex justify-end gap-3 pt-4">
       <UButton v-if="aoCancelar" type="button" color="neutral" variant="ghost" @click="aoCancelar">Cancelar</UButton>
-      <UButton v-else type="button" color="neutral" variant="ghost" :to="`/contas/${estado.tipo}`">Cancelar</UButton>
+      <UButton v-else type="button" color="neutral" variant="ghost" :to="`/contas/${tipo}`">Cancelar</UButton>
       <UButton type="submit" color="primary" :loading="carregando">{{ rotulo || 'Salvar' }}</UButton>
     </div>
   </UForm>

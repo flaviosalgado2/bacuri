@@ -5,7 +5,6 @@ const dataSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no f
 
 const schema = z.object({
   nome: z.string().min(1).max(255).optional(),
-  tipo: z.enum(['pagar', 'receber']).optional(),
   valor: z.coerce.number().min(0.01).optional(),
   vencimento: dataSchema.optional(),
   descontoAte: dataSchema.optional().nullable(),

@@ -2,30 +2,32 @@
 definePageMeta({ layout: 'padrao', middleware: 'logado', titulo: 'Dashboard', subtitulo: 'Visão geral das suas finanças' })
 useHead({ title: 'Dashboard - Bacuri' })
 
-const { listar } = useContas()
-const { data: resultado, pending } = await useLazyAsyncData('dashboard', () => listar(), { default: () => ({ contas: [], total: 0, temMais: false }) })
-
-const contas = computed(() => resultado.value?.contas ?? [])
-
-const totalPagar = computed(() => pendentes.value.filter(c => c.tipo === 'pagar').reduce((a, c) => a + Number(c.valor), 0))
-const totalReceber = computed(() => pendentes.value.filter(c => c.tipo === 'receber').reduce((a, c) => a + Number(c.valor), 0))
-const pagarPendentes = computed(() => pendentes.value.filter(c => c.tipo === 'pagar'))
-const receberPendentes = computed(() => pendentes.value.filter(c => c.tipo === 'receber'))
-const pendentes = computed(() => contas.value.filter(c => c.status === 'pendente'))
-const vencidas = computed(() => {
-  const hoje = new Date()
-  hoje.setHours(0, 0, 0, 0)
-  return pendentes.value.filter(c => paraDataLocal(c.vencimento) < hoje)
-})
+const { contasPagar, contasReceber, pending } = useResumoContas()
 
 function paraDataLocal(d: string) {
   const [ano, mes, dia] = d.split('-').map(Number)
   return new Date(ano, mes - 1, dia)
 }
 
+const pendentesPagar = computed(() => contasPagar.value.filter(c => c.status === 'pendente'))
+const pendentesReceber = computed(() => contasReceber.value.filter(c => c.status === 'pendente'))
+const todasPendentes = computed(() => [...pendentesPagar.value, ...pendentesReceber.value])
+
+const totalPagar = computed(() => pendentesPagar.value.reduce((a, c) => a + Number(c.valor), 0))
+const totalReceber = computed(() => pendentesReceber.value.reduce((a, c) => a + Number(c.valor), 0))
+
+const vencidas = computed(() => {
+  const hoje = new Date()
+  hoje.setHours(0, 0, 0, 0)
+  return todasPendentes.value.filter(c => paraDataLocal(c.vencimento) < hoje)
+})
+
 const proximas = computed(() => {
   const limite = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  return pendentes.value.filter(c => paraDataLocal(c.vencimento) <= limite).sort((a, b) => +paraDataLocal(a.vencimento) - +paraDataLocal(b.vencimento)).slice(0, 5)
+  return todasPendentes.value
+    .filter(c => paraDataLocal(c.vencimento) <= limite)
+    .sort((a, b) => +paraDataLocal(a.vencimento) - +paraDataLocal(b.vencimento))
+    .slice(0, 5)
 })
 
 const moeda = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
@@ -46,7 +48,7 @@ const mostrarDados = useState('mostrarDadosDashboard', () => false)
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade de Contas a Pagar (Pendentes)</p>
-              <p class="text-2xl font-bold text-red-500">{{ mostrarDados ? pagarPendentes.length : '••' }}</p>
+              <p class="text-2xl font-bold text-red-500">{{ mostrarDados ? pendentesPagar.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-receipt" class="w-6 h-6 text-red-500" />
           </div>
@@ -64,7 +66,7 @@ const mostrarDados = useState('mostrarDadosDashboard', () => false)
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade de Contas a Receber (Pendentes)</p>
-              <p class="text-2xl font-bold text-emerald-500">{{ mostrarDados ? receberPendentes.length : '••' }}</p>
+              <p class="text-2xl font-bold text-emerald-500">{{ mostrarDados ? pendentesReceber.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-hand-coins" class="w-6 h-6 text-emerald-500" />
           </div>
@@ -91,7 +93,7 @@ const mostrarDados = useState('mostrarDadosDashboard', () => false)
           <div class="flex items-start justify-between">
             <div>
               <p class="text-sm text-(--ui-text-muted)">Quantidade Geral Total (Pendentes)</p>
-              <p class="text-2xl font-bold">{{ mostrarDados ? pendentes.length : '••' }}</p>
+              <p class="text-2xl font-bold">{{ mostrarDados ? todasPendentes.length : '••' }}</p>
             </div>
             <UIcon name="i-lucide-clock-alert" class="w-6 h-6 text-(--ui-warning)" />
           </div>
@@ -129,7 +131,7 @@ const mostrarDados = useState('mostrarDadosDashboard', () => false)
 
       <UCard>
         <template #header><h3 class="font-semibold">Despesas mensais</h3></template>
-        <GraficoDespesasMensais :contas="contas || []" :mostrar-valores="mostrarDados" />
+        <GraficoDespesasMensais :contas-pagar="contasPagar" :contas-receber="contasReceber" :mostrar-valores="mostrarDados" />
       </UCard>
     </template>
   </div>

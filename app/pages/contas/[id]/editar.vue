@@ -11,8 +11,10 @@ const id = Number(rota.params.id)
 
 const { data: conta, pending } = await useLazyAsyncData(`conta-${id}`, () => buscar(id))
 
+const tipoConta = computed(() => conta.value?.tipo ?? 'pagar')
+
 const formulario = reactive<FormularioConta>({
-  nome: '', tipo: 'pagar', valor: 0, vencimento: '',
+  nome: '', valor: 0, vencimento: '',
   descontoAte: null, observacoes: null, status: 'pendente'
 })
 
@@ -20,7 +22,6 @@ watchEffect(() => {
   if (!conta.value) return
   Object.assign(formulario, {
     nome: conta.value.nome,
-    tipo: conta.value.tipo,
     valor: Number(conta.value.valor),
     vencimento: conta.value.vencimento.split('T')[0],
     descontoAte: conta.value.descontoAte ? conta.value.descontoAte.split('T')[0] : null,
@@ -35,7 +36,7 @@ async function enviar() {
   carregando.value = true
   try {
     await atualizar(id, formulario)
-    router.push(`/contas/${formulario.tipo}`)
+    router.push(`/contas/${tipoConta.value}`)
   } catch {
     // erro já tratado pelo composable (toast)
   } finally {
@@ -52,7 +53,7 @@ async function enviar() {
       </div>
     </UCard>
     <UCard v-else class="max-w-3xl">
-      <FormularioConta v-model:modelo="formulario" :carregando="carregando" rotulo="Salvar" @submit="enviar" />
+      <FormularioConta v-model:modelo="formulario" :tipo="tipoConta" :carregando="carregando" rotulo="Salvar" modo-edicao @submit="enviar" />
     </UCard>
   </div>
 </template>

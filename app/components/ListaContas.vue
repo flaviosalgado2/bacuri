@@ -86,7 +86,6 @@ const clonando = ref(false)
 const contaOriginal = ref<Conta | null>(null)
 const dadosClonagem = ref<FormularioConta>({
   nome: '',
-  tipo: 'pagar',
   valor: 0,
   vencimento: '',
   descontoAte: null,
@@ -94,11 +93,13 @@ const dadosClonagem = ref<FormularioConta>({
   status: 'pendente'
 })
 
+const tipoClonagem = ref<'pagar' | 'receber'>('pagar')
+
 function abrirClonagem(c: Conta) {
   contaOriginal.value = c
+  tipoClonagem.value = c.tipo
   dadosClonagem.value = {
     nome: c.nome,
-    tipo: c.tipo,
     valor: Number(c.valor),
     vencimento: dataMesSeguinte(c.vencimento),
     descontoAte: c.descontoAte ? dataMesSeguinte(c.descontoAte) : null,
@@ -112,7 +113,7 @@ async function confirmarClonagem() {
   if (!contaOriginal.value) return
   clonando.value = true
   try {
-    await criar(dadosClonagem.value)
+    await criar({ ...dadosClonagem.value, tipo: tipoClonagem.value })
     modalClonarAberto.value = false
     emit('atualizar')
   } catch {
@@ -176,7 +177,7 @@ async function confirmarClonagem() {
 
     <UModal v-model:open="modalClonarAberto" title="Clonar conta" description="Confirme os dados da conta clonada para o próximo mês.">
       <template #body>
-        <FormularioConta v-model:modelo="dadosClonagem" :carregando="clonando" rotulo="Clonar conta" :ao-cancelar="() => modalClonarAberto = false" @submit="confirmarClonagem" />
+        <FormularioConta v-model:modelo="dadosClonagem" :tipo="tipoClonagem" :carregando="clonando" rotulo="Clonar conta" :ao-cancelar="() => modalClonarAberto = false" @submit="confirmarClonagem" />
       </template>
     </UModal>
   </div>

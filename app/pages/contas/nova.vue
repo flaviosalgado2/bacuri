@@ -8,11 +8,10 @@ const rota = useRoute()
 const router = useRouter()
 const { criar } = useContas()
 
-const tipo = rota.query.tipo as 'pagar' | 'receber' | undefined
+const tipo = (rota.query.tipo as 'pagar' | 'receber') || 'pagar'
 
 const formulario = reactive<FormularioConta>({
   nome: '',
-  tipo: tipo || 'pagar',
   valor: 0,
   vencimento: new Date().toISOString().split('T')[0],
   descontoAte: null,
@@ -25,8 +24,8 @@ const carregando = ref(false)
 async function enviar() {
   carregando.value = true
   try {
-    await criar(formulario)
-    router.push(`/contas/${formulario.tipo}`)
+    await criar({ ...formulario, tipo })
+    router.push(`/contas/${tipo}`)
   } catch {
     // erro já tratado pelo composable (toast)
   } finally {
@@ -38,7 +37,7 @@ async function enviar() {
 <template>
   <div>
     <UCard class="max-w-3xl">
-      <FormularioConta v-model:modelo="formulario" :carregando="carregando" rotulo="Cadastrar" @submit="enviar" />
+      <FormularioConta v-model:modelo="formulario" :tipo="tipo" :carregando="carregando" rotulo="Cadastrar" @submit="enviar" />
     </UCard>
   </div>
 </template>

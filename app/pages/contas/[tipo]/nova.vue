@@ -17,9 +17,12 @@ const tipo = rota.params.tipo as 'pagar' | 'receber'
 useHead({ title: `Nova Conta a ${tipo === 'pagar' ? 'Pagar' : 'Receber'} - Bacuri` })
 
 const formulario = reactive<FormularioConta>({
-  nome: '', tipo, valor: 0,
+  nome: '',
+  valor: 0,
   vencimento: new Date().toISOString().split('T')[0],
-  descontoAte: null, observacoes: null, status: 'pendente'
+  descontoAte: null,
+  observacoes: null,
+  status: 'pendente'
 })
 
 const carregando = ref(false)
@@ -27,7 +30,7 @@ const carregando = ref(false)
 async function enviar() {
   carregando.value = true
   try {
-    await criar(formulario)
+    await criar({ ...formulario, tipo })
     router.push(`/contas/${tipo}`)
   } catch {
     // erro já tratado pelo composable (toast)
@@ -40,7 +43,7 @@ async function enviar() {
 <template>
   <div>
     <UCard class="max-w-3xl">
-      <FormularioConta v-model:modelo="formulario" :carregando="carregando" rotulo="Cadastrar" @submit="enviar" />
+      <FormularioConta v-model:modelo="formulario" :tipo="tipo" :carregando="carregando" rotulo="Cadastrar" @submit="enviar" />
     </UCard>
   </div>
 </template>
