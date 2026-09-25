@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { atualizarConfiguracao, configuracaoPublica } from '../../services/configuracaoService'
 
 const schema = z.object({
-  tema: z.enum(['system', 'light', 'dark']).optional(),
   outlookAtivado: z.boolean().optional(),
   outlookClientId: z.string().max(512).optional().nullable(),
   outlookClientSecret: z.string().max(512).optional().nullable(),

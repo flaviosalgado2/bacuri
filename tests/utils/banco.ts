@@ -11,6 +11,7 @@ export async function limparBanco() {
     DROP TYPE IF EXISTS perfil CASCADE;
     DROP TYPE IF EXISTS status CASCADE;
     DROP TYPE IF EXISTS tipo CASCADE;
+    DROP TYPE IF EXISTS tema CASCADE;
     DROP TABLE IF EXISTS drizzle.__drizzle_migrations CASCADE;
     DROP SCHEMA IF EXISTS drizzle CASCADE;
   `)

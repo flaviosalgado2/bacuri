@@ -1,29 +1,5 @@
-import type { Tema } from '~/services/configuracaoService'
-
-export default defineNuxtPlugin(async () => {
-  if (import.meta.env.SSR) return
-
-  const colorMode = useColorMode()
-
-  function aplicarTema(tema: Tema) {
-    if (tema === 'system') {
-      colorMode.preference = 'system'
-    } else {
-      colorMode.preference = tema
-    }
-  }
-
-  const { loggedIn } = useUserSession()
-
-  if (!loggedIn.value) {
-    colorMode.preference = 'system'
-    return
-  }
-
-  try {
-    const configuracao = await $fetch<{ tema: Tema }>('/api/configuracoes')
-    aplicarTema(configuracao.tema)
-  } catch {
-    colorMode.preference = 'system'
-  }
+export default defineNuxtPlugin(() => {
+  // O tema é gerenciado inteiramente no navegador via useColorMode do Nuxt UI,
+  // que persiste a preferência em localStorage. Nenhuma chamada ao servidor
+  // é mais necessária aqui.
 })

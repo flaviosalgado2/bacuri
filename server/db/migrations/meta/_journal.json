@@ -57,6 +57,13 @@
       "when": 1789837063949,
       "tag": "0007_lucky_tenebrous",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790340225506,
+      "tag": "0008_late_odin",
+      "breakpoints": true
     }
   ]
 }

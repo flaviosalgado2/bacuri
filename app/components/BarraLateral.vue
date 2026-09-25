@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { usuario, sair } = useAutenticacao()
 const rota = useRoute()
-const modoCor = useColorMode()
+const { icone, rotulo, alternar } = useTema()
 
 const root = computed(() => usuario.value?.perfil === 'root')
 
@@ -25,8 +25,6 @@ watchEffect(() => {
 
   itens.value = base
 })
-
-const escuro = computed(() => modoCor.value === 'dark')
 </script>
 
 <template>
@@ -55,8 +53,8 @@ const escuro = computed(() => modoCor.value === 'dark')
           <UBadge v-if="root" color="warning" size="xs">Root</UBadge>
         </div>
         <div class="flex gap-2">
-          <UButton color="neutral" variant="ghost" :icon="escuro ? 'i-lucide-sun' : 'i-lucide-moon'" class="flex-1" @click="modoCor.preference = escuro ? 'light' : 'dark'">
-            {{ escuro ? 'Claro' : 'Escuro' }}
+          <UButton color="neutral" variant="ghost" :icon="icone" class="flex-1" @click="alternar">
+            {{ rotulo }}
           </UButton>
           <UButton color="neutral" variant="ghost" icon="i-lucide-log-out" class="flex-1" @click="sair">
             Sair

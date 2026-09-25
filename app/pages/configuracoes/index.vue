@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'padrao', middleware: 'logado', titulo: 'Configurações', subtitulo: 'Personalize integrações e preferências' })
+definePageMeta({ layout: 'padrao', middleware: 'logado', titulo: 'Configurações', subtitulo: 'Configure a integração com o Outlook' })
 useHead({ title: 'Configurações - Bacuri' })
 
 const { buscar, atualizar, obterUrlAuth, desconectar, listarCalendarios, testarConexao } = useConfiguracoes()
@@ -8,7 +8,6 @@ const { data: configuracao, pending, refresh } = await useLazyAsyncData('configu
   default: () => ({
     id: 0,
     usuarioId: 0,
-    tema: 'system' as const,
     outlookAtivado: false,
     outlookClientId: null,
     outlookTenantId: null,
@@ -22,7 +21,6 @@ const { data: configuracao, pending, refresh } = await useLazyAsyncData('configu
 })
 
 const formulario = reactive({
-  tema: 'system' as const,
   outlookAtivado: false,
   outlookClientId: '',
   outlookClientSecret: '',
@@ -42,7 +40,6 @@ const salvando = ref(false)
 
 watch(() => configuracao.value, (nova) => {
   if (!nova) return
-  formulario.tema = nova.tema
   formulario.outlookAtivado = nova.outlookAtivado
   formulario.outlookClientId = nova.outlookClientId || ''
   formulario.outlookTenantId = nova.outlookTenantId || ''
@@ -103,13 +100,10 @@ async function testar() {
   }
 }
 
-const colorMode = useColorMode()
-
 async function salvar() {
   salvando.value = true
   try {
     await atualizar({
-      tema: formulario.tema,
       outlookAtivado: formulario.outlookAtivado,
       outlookClientId: formulario.outlookClientId || null,
       outlookClientSecret: formulario.outlookClientSecret || null,
@@ -120,24 +114,12 @@ async function salvar() {
       outlookLembreteDias: Number(formulario.outlookLembreteDias)
     })
 
-    if (formulario.tema === 'system') {
-      colorMode.preference = 'system'
-    } else {
-      colorMode.preference = formulario.tema
-    }
-
     await refresh()
   } finally {
     salvando.value = false
   }
 }
 
-const abaAtiva = ref('geral')
-
-const abas = [
-  { label: 'Geral', value: 'geral', icon: 'i-lucide-sliders-horizontal' },
-  { label: 'Outlook Calendar', value: 'outlook', icon: 'i-lucide-calendar-days' }
-]
 </script>
 
 <template>
@@ -152,41 +134,7 @@ const abas = [
           <h3 class="font-semibold">Configurações do sistema</h3>
         </template>
 
-        <div class="w-full">
-          <div class="flex border-b border-(--ui-border) mb-4">
-            <button
-              v-for="aba in abas"
-              :key="aba.value"
-              type="button"
-              class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px"
-              :class="abaAtiva === aba.value ? 'border-(--ui-primary) text-(--ui-primary)' : 'border-transparent text-(--ui-text-muted) hover:text-(--ui-text)'"
-              @click="abaAtiva = aba.value"
-            >
-              <UIcon :name="aba.icon" class="w-4 h-4" />
-              {{ aba.label }}
-            </button>
-          </div>
-
-          <div v-if="abaAtiva === 'geral'" :key="'geral'" class="py-4 space-y-6">
-            <div>
-              <UFormField label="Tema" name="tema">
-                <URadioGroup
-                  v-model="formulario.tema"
-                  :items="[
-                    { label: 'Sistema', value: 'system', description: 'Usa o modo do sistema operacional' },
-                    { label: 'Claro', value: 'light', description: 'Tema claro fixo' },
-                    { label: 'Escuro', value: 'dark', description: 'Tema escuro fixo' }
-                  ]"
-                />
-              </UFormField>
-            </div>
-
-            <UButton color="primary" icon="i-lucide-save" :loading="salvando" @click="salvar">
-              Salvar preferências
-            </UButton>
-          </div>
-
-          <div v-else-if="abaAtiva === 'outlook'" :key="'outlook'" class="space-y-6 py-4">
+        <div class="w-full space-y-6 py-4">
             <p class="text-sm text-(--ui-text-muted)">
               Configure a integração com o calendário do Outlook para receber lembretes dos vencimentos das suas contas.
             </p>
@@ -295,7 +243,6 @@ const abas = [
                 Salvar configurações
               </UButton>
             </div>
-          </div>
         </div>
       </UCard>
     </template>
