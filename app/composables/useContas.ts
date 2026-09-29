@@ -19,7 +19,14 @@ export interface FiltrosConta {
   status?: 'pendente' | 'pago' | null
   de?: string | null
   ate?: string | null
+  dataPor?: DataPorConta | null
+  busca?: string | null
+  ordenarPor?: OrdenacaoConta | null
+  ordem?: 'asc' | 'desc' | null
 }
+
+export type OrdenacaoConta = 'id' | 'nome' | 'valor' | 'vencimento' | 'descontoAte' | 'observacoes'
+export type DataPorConta = 'vencimento' | 'descontoAte' | 'criadoEm' | 'atualizadoEm'
 
 export interface Paginacao {
   pagina: number

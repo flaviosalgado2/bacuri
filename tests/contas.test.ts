@@ -76,4 +76,45 @@ describe('Contas', async () => {
     const lista = await $fetch('/api/contas', { headers: { cookie } })
     expect(lista.contas.some((c: any) => c.id === conta.id)).toBe(false)
   })
+
+  it('busca em todos os campos', async () => {
+    const cookie = await criarSessao('maria@teste.com', 'senha12345')
+
+    await $fetch('/api/contas', {
+      method: 'POST',
+      headers: { cookie },
+      body: { nome: 'BuscaUnica123', tipo: 'pagar', valor: 350, vencimento: '2026-09-25', status: 'pendente' }
+    })
+
+    const porNome = await $fetch('/api/contas', { headers: { cookie }, query: { tipo: 'pagar', busca: 'Unica123' } })
+    expect(porNome.contas.some((c: any) => c.nome === 'BuscaUnica123')).toBe(true)
+
+    const porValor = await $fetch('/api/contas', { headers: { cookie }, query: { tipo: 'pagar', busca: '350' } })
+    expect(porValor.contas.some((c: any) => c.nome === 'BuscaUnica123')).toBe(true)
+  })
+
+  it('ordena por qualquer campo', async () => {
+    const cookie = await criarSessao('maria@teste.com', 'senha12345')
+
+    await $fetch('/api/contas', {
+      method: 'POST',
+      headers: { cookie },
+      body: { nome: 'Z Ordenacao', tipo: 'pagar', valor: 100, vencimento: '2026-09-10', status: 'pendente' }
+    })
+    await $fetch('/api/contas', {
+      method: 'POST',
+      headers: { cookie },
+      body: { nome: 'A Ordenacao', tipo: 'pagar', valor: 200, vencimento: '2026-09-11', status: 'pendente' }
+    })
+
+    const ordenada = await $fetch('/api/contas', { headers: { cookie }, query: { tipo: 'pagar', ordenarPor: 'nome', ordem: 'asc' } })
+    const nomes = ordenada.contas.filter((c: any) => c.nome.includes('Ordenacao')).map((c: any) => c.nome)
+    expect(nomes[0]).toBe('A Ordenacao')
+    expect(nomes[1]).toBe('Z Ordenacao')
+
+    const decrescente = await $fetch('/api/contas', { headers: { cookie }, query: { tipo: 'pagar', ordenarPor: 'nome', ordem: 'desc' } })
+    const nomesDesc = decrescente.contas.filter((c: any) => c.nome.includes('Ordenacao')).map((c: any) => c.nome)
+    expect(nomesDesc[0]).toBe('Z Ordenacao')
+    expect(nomesDesc[1]).toBe('A Ordenacao')
+  })
 })

@@ -1,9 +1,41 @@
 <script setup lang="ts">
-import type { Conta, FormularioConta } from '~/composables/useContas'
+import type { Conta, FormularioConta, OrdenacaoConta } from '~/composables/useContas'
 import { dataMesSeguinte } from '~/composables/useContas'
 
 const props = defineProps<{ contas: Conta[] }>()
-const emit = defineEmits<{ (e: 'atualizar'): void }>()
+const emit = defineEmits<{ (e: 'atualizar'): void; (e: 'update:ordenarPor', valor: OrdenacaoConta): void; (e: 'update:ordem', valor: 'asc' | 'desc'): void }>()
+
+const ordenarPor = defineModel<OrdenacaoConta>('ordenarPor')
+const ordem = defineModel<'asc' | 'desc'>('ordem')
+
+interface Coluna {
+  chave: OrdenacaoConta
+  label: string
+  alinhamento: 'left' | 'center' | 'right'
+}
+
+const colunas: Coluna[] = [
+  { chave: 'nome', label: 'Nome', alinhamento: 'left' },
+  { chave: 'vencimento', label: 'Vencimento', alinhamento: 'left' },
+  { chave: 'descontoAte', label: 'Desconto', alinhamento: 'left' },
+  { chave: 'valor', label: 'Valor', alinhamento: 'right' },
+  { chave: 'status', label: 'Status', alinhamento: 'center' }
+]
+
+function ordenarPorColuna(chave: OrdenacaoConta) {
+  if (!ordenarPor.value || !ordem.value) return
+  if (ordenarPor.value === chave) {
+    ordem.value = ordem.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    ordenarPor.value = chave
+    ordem.value = 'asc'
+  }
+}
+
+function iconeOrdenacao(chave: OrdenacaoConta) {
+  if (ordenarPor.value !== chave) return 'i-lucide-chevrons-up-down'
+  return ordem.value === 'asc' ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+}
 
 const { mudarStatus, excluir, criar } = useContas()
 
@@ -129,11 +161,18 @@ async function confirmarClonagem() {
     <table class="w-full text-sm">
       <thead>
         <tr class="border-b border-(--ui-border)">
-          <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Nome</th>
-          <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Vencimento</th>
-          <th class="text-left py-3 px-4 font-medium text-(--ui-text-muted)">Desconto</th>
-          <th class="text-right py-3 px-4 font-medium text-(--ui-text-muted)">Valor</th>
-          <th class="text-center py-3 px-4 font-medium text-(--ui-text-muted)">Status</th>
+          <th
+            v-for="coluna in colunas"
+            :key="coluna.chave"
+            class="py-3 px-4 font-medium text-(--ui-text-muted) select-none"
+            :class="[`text-${coluna.alinhamento}`, ordenarPor ? 'cursor-pointer hover:text-(--ui-text)' : '']"
+            @click="ordenarPor && ordenarPorColuna(coluna.chave)"
+          >
+            <div class="flex items-center gap-1" :class="{ 'justify-end': coluna.alinhamento === 'right', 'justify-center': coluna.alinhamento === 'center' }">
+              {{ coluna.label }}
+              <UIcon v-if="ordenarPor" :name="iconeOrdenacao(coluna.chave)" class="w-4 h-4" />
+            </div>
+          </th>
           <th class="text-right py-3 px-4 font-medium text-(--ui-text-muted)">Ações</th>
         </tr>
       </thead>

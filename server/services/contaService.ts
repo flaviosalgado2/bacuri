@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, desc, count, sql } from 'drizzle-orm'
+import { and, eq, gte, lte, desc, asc, count, sql, or, ilike } from 'drizzle-orm'
 import { unionAll } from 'drizzle-orm/pg-core'
 import {
   contasPagar,
@@ -14,12 +14,22 @@ export type TipoConta = 'pagar' | 'receber'
 export type Conta = (ContaPagar | ContaReceber) & { tipo: TipoConta }
 export type NovaConta = (Omit<NovaContaPagar, 'tipo'> | Omit<NovaContaReceber, 'tipo'>) & { tipo: TipoConta }
 
+export const CAMPOS_ORDENACAO = ['id', 'nome', 'valor', 'vencimento', 'descontoAte', 'observacoes'] as const
+export type CampoOrdenacaoConta = typeof CAMPOS_ORDENACAO[number]
+
+export const CAMPOS_DATA = ['vencimento', 'descontoAte', 'criadoEm', 'atualizadoEm'] as const
+export type CampoDataConta = typeof CAMPOS_DATA[number]
+
 export type FiltrosContaService = {
   usuarioId?: number
   tipo?: TipoConta
   status?: 'pendente' | 'pago'
   de?: string
   ate?: string
+  dataPor?: CampoDataConta
+  busca?: string
+  ordenarPor?: CampoOrdenacaoConta
+  ordem?: 'asc' | 'desc'
 }
 
 export type Paginacao = {
@@ -54,10 +64,40 @@ function montarFiltrosTabela(tipo: TipoConta, filtros: FiltrosContaService) {
 
   if (filtros.usuarioId) condicoes.push(eq(t.usuarioId, filtros.usuarioId))
   if (filtros.status) condicoes.push(eq(t.status, filtros.status))
-  if (filtros.de) condicoes.push(gte(t.vencimento, filtros.de))
-  if (filtros.ate) condicoes.push(lte(t.vencimento, filtros.ate))
+
+  const campoData = filtros.dataPor || 'vencimento'
+  if (filtros.de) condicoes.push(gte(t[campoData], filtros.de))
+  if (filtros.ate) condicoes.push(lte(t[campoData], filtros.ate))
+
+  if (filtros.busca) {
+    const termo = `%${filtros.busca}%`
+    condicoes.push(or(
+      ilike(t.nome, termo),
+      ilike(sql`cast(${t.valor} as text)`, termo),
+      ilike(t.observacoes, termo)
+    ))
+  }
 
   return condicoes.length ? and(...condicoes) : undefined
+}
+
+function colunaOrdenacao(tipo: TipoConta, campo: CampoOrdenacaoConta) {
+  const t = tabela(tipo)
+  const colunas = {
+    id: t.id,
+    nome: t.nome,
+    valor: t.valor,
+    vencimento: t.vencimento,
+    descontoAte: t.descontoAte,
+    observacoes: t.observacoes
+  }
+  return colunas[campo]
+}
+
+function montarOrderBy(tipo: TipoConta, filtros: FiltrosContaService) {
+  const campo = filtros.ordenarPor || 'vencimento'
+  const direcao = filtros.ordem === 'asc' ? asc : desc
+  return direcao(colunaOrdenacao(tipo, campo))
 }
 
 function comTipo<T extends ContaPagar | ContaReceber>(conta: T | undefined, tipo: TipoConta): Conta | undefined {
@@ -78,7 +118,7 @@ export async function listarContas(
 
     const [{ value: total }] = await banco.select({ value: count() }).from(t).where(where)
 
-    let query = banco.select().from(t).where(where).orderBy(desc(t.vencimento))
+    let query = banco.select().from(t).where(where).orderBy(montarOrderBy(tipo, filtros))
 
     if (paginacao) {
       const offset = (paginacao.pagina - 1) * paginacao.limite
@@ -102,10 +142,13 @@ export async function listarContas(
   const [{ value: totalReceber }] = await banco.select({ value: count() }).from(contasReceber).where(whereReceber)
   const total = totalPagar + totalReceber
 
+  const campoOrdenacao = filtros.ordenarPor || 'vencimento'
+  const direcao = filtros.ordem === 'asc' ? 'asc' : 'desc'
+
   let query = unionAll(
     banco.select(camposSelecao('pagar')).from(contasPagar).where(wherePagar),
     banco.select(camposSelecao('receber')).from(contasReceber).where(whereReceber)
-  ).orderBy(desc(sql`vencimento`))
+  ).orderBy(sql.raw(`"${campoOrdenacao}" ${direcao}`))
 
   if (paginacao) {
     const offset = (paginacao.pagina - 1) * paginacao.limite

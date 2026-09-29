@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { listarContas } from '../../services/contaService'
+import { listarContas, CAMPOS_ORDENACAO, CAMPOS_DATA } from '../../services/contaService'
 
 const dataSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD')
 
@@ -8,6 +8,10 @@ const query = z.object({
   status: z.enum(['pendente', 'pago']).optional(),
   de: dataSchema.optional(),
   ate: dataSchema.optional(),
+  dataPor: z.enum(CAMPOS_DATA).optional(),
+  busca: z.string().trim().optional(),
+  ordenarPor: z.enum(CAMPOS_ORDENACAO).optional(),
+  ordem: z.enum(['asc', 'desc']).optional(),
   pagina: z.coerce.number().int().min(1).default(1),
   limite: z.coerce.number().int().min(1).max(100).default(20)
 })
@@ -20,7 +24,11 @@ export default defineEventHandler(async (event) => {
     tipo: q.tipo,
     status: q.status,
     de: q.de,
-    ate: q.ate
+    ate: q.ate,
+    dataPor: q.dataPor,
+    busca: q.busca,
+    ordenarPor: q.ordenarPor,
+    ordem: q.ordem
   }
 
   if (sessao.user.perfil !== 'root') {
